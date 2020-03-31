@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Валентина Пашкова](https://up.htmlacademy.ru/ecmascript/11/user/1080395).
-* Наставник: `Неизвестно`.
+* Наставник: [Владимир Чебаков](https://up.htmlacademy.ru/ecmascript/11/user/1100789).
 
 ---
 
