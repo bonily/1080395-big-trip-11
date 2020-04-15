@@ -12,4 +12,31 @@ const getSimpleDate = (date) => {
   return resultDate;
 };
 
-export {getCurrentDateValue, getSimpleDate};
+const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
+
+const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`,
+  BEFOREELEMENT: `before`
+};
+
+const render = (container, element, place, specialPlace) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+    case RenderPosition.BEFOREELEMENT:
+      container.insertBefore(element, specialPlace);
+      break;
+  }
+};
+
+export {getCurrentDateValue, getSimpleDate, createElement, RenderPosition, render};

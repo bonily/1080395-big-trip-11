@@ -1,5 +1,5 @@
 import {MONTH_NAMES} from "../const.js";
-import {getCurrentDateValue, getSimpleDate} from "../utils.js";
+import {getCurrentDateValue, getSimpleDate, createElement} from "../utils.js";
 
 const createTripDurationMarkup = (dates) => {
   const lastDateIndex = dates.length - 1;
@@ -42,3 +42,26 @@ export const createTripMainInfoTemplate = (items) => {
   </section>`
   );
 };
+
+export default class TripMainComponent {
+  constructor(items) {
+    this._items = items;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripMainInfoTemplate(this._items);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+  removeElement() {
+    this._element = null;
+  }
+}
+
