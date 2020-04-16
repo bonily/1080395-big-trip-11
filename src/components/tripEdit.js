@@ -1,4 +1,5 @@
-import {getCurrentDateValue} from "../utils.js";
+import {getCurrentDateValue, createElement} from "../utils.js";
+
 
 const getDateTime = (date) => {
   const month = date.getMonth() + 1;
@@ -19,9 +20,17 @@ const createOfferMarkup = (offers, aviableOffer) => {
   );
 };
 
-export const createTripEditTemplate = (item) => {
-  const {eventType, destination, price, startEventTime, endEventTime, offers, aviableOffers} = item;
+
+const createPhotosMarkup = (photo) => {
+  return (
+    `<img class="event__photo" src="${photo}" alt="Event photo">`
+  );
+};
+
+const createTripEditTemplate = (item) => {
+  const {eventType, destination, price, startEventTime, endEventTime, offers, aviableOffers, description, photos} = item;
   const offersMarkup = aviableOffers.map((aviableOffer) => createOfferMarkup(offers, aviableOffer)).join(`\n`);
+  const photosMurkup = photos.map((photo) => createPhotosMarkup(photo)).join(`\n`);
   return (
     `<form class="trip-events__item event  event--edit" action="#" method="post">
         <header class="event__header">
@@ -149,7 +158,40 @@ export const createTripEditTemplate = (item) => {
               ${offersMarkup}
               </div>
             </section>
+            <section class="event__section  event__section--destination">
+                <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+                <p class="event__destination-description">${description}.</p>
+
+                <div class="event__photos-container">
+                  <div class="event__photos-tape">
+                    ${photosMurkup}
+                  </div>
+                </div>
+              </section>
           </section>
         </form>`
   );
 };
+
+
+export default class TripEditComponent {
+  constructor(item) {
+    this._item = item;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEditTemplate(this._item);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+  removeElement() {
+    this._element = null;
+  }
+}

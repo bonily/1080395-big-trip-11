@@ -1,5 +1,4 @@
-import {MONTH_NAMES} from "../const.js";
-import {getCurrentDateValue} from "../utils.js";
+import {getCurrentDateValue, createElement} from "../utils.js";
 
 
 /**
@@ -46,47 +45,6 @@ const createOfferMarkup = (offers) => {
      </li>`);
     })
     .join(`\n`);
-};
-
-/**
- * @param {Array} items  - массив точек маршрута для 1 дня
- * @return {string} - возвращает разметку всех точек движения для текущего дня;
- */
-const createDayItemsMarkup = (items) => {
-  const itemsMarkup = items.map((it) => createTripItemTemplate(it));
-  return (
-    `<ul class="trip-events__list">
-      ${itemsMarkup}
-    </ul>`
-  );
-};
-
-/**
- * @param {string} tripDate - текущая дата
- * @param {array} dayItems - массив точек маршрута для текущего дня
- * @param {number} dayIndex - порядковый номер дня путешествия
- * @return {string} - возращает разметку для 1 дня птешествия;
- */
-const createTripDayMarkup = (tripDate, dayItems, dayIndex) => {
-  const dayItemsMarkup = createDayItemsMarkup(dayItems);
-  const shortDate = tripDate
-    .split(`-`)
-    .slice(1)
-    .map((element, i) => {
-      element = i === 0 ? MONTH_NAMES[Number(element - 1)] : element;
-      return element;
-    })
-    .join(` `);
-
-  return (
-    `<li class="trip-days__item  day">
-      <div class="day__info">
-        <span class="day__counter">${dayIndex}</span>
-        <time class="day__date" datetime="${tripDate}">${shortDate}</time>
-      </div>
-      ${dayItemsMarkup}
-    </li>`
-  );
 };
 
 
@@ -143,16 +101,25 @@ const createTripItemTemplate = (item) => {
   );
 };
 
-/**
- * @param {Object} trip  - объект с группированными по датам точкам путешествия, каждая уникальная дата = свойство
- * @return {string} - возвращает итоговую разметку раздела информации по маршруту
- */
-export const createTripDaysTemplate = (trip) => {
-  const days = Object.keys(trip).sort();
-  const daysMarkup = days.map((day, i) => createTripDayMarkup(day, trip[day], (i + 1)));
-  return (
-    `<ul class="trip-days">
-      ${daysMarkup}
-    </ul>`
-  );
-};
+
+export default class TripItemComponent {
+  constructor(item) {
+    this._item = item;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripItemTemplate(this._item);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+  removeElement() {
+    this._element = null;
+  }
+}

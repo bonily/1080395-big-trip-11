@@ -1,3 +1,5 @@
+import {createElement} from "../utils.js";
+
 const createFlterMarkup = (filter) => {
   const isFilterAktive = () => filter.isActive ? `checked` : ``;
   return (
@@ -9,15 +11,37 @@ const createFlterMarkup = (filter) => {
 };
 
 
-export const createListSortTemplate = (filters) => {
+const createListSortTemplate = (filters) => {
   const filtersMarkup = filters.map((filter) => createFlterMarkup(filter)).join(`\n`);
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
         <span class="trip-sort__item  trip-sort__item--day">Day</span>
-
         ${filtersMarkup}
         
         <span class="trip-sort__item  trip-sort__item--offers">Offers</span>
       </form>`
   );
 };
+
+export default class SortListComponent {
+  constructor(filters) {
+    this._element = null;
+    this._filters = filters;
+  }
+
+  getTemplate() {
+    return createListSortTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

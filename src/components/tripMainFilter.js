@@ -1,3 +1,5 @@
+import {createElement} from "../utils.js";
+
 const craeteMainFilterMarkup = (filter) => {
   const isFilterAktive = () => filter.isActive ? `checked` : ``;
   return (
@@ -18,3 +20,25 @@ export const createTripMainFilterTemlate = (filters) => {
       </form>`
   );
 };
+
+export default class TripMainFilterComponent {
+  constructor(filters) {
+    this._filters = filters;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripMainFilterTemlate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
