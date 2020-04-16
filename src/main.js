@@ -9,9 +9,10 @@ import TripMainComponent from "./components/tripMainInfo.js";
 import TripMainControlComponent from "./components/tripMainControls.js";
 import TripMainFilterComponent from "./components/tripMainFilter.js";
 import TripEditComponent from "./components/tripEdit.js";
+import TripNoItemComponent from "./components/noItem.js";
 
 
-const TASK_COUNT = 20;
+const TASK_COUNT = 0;
 
 const items = generateItems(TASK_COUNT);
 
@@ -81,6 +82,11 @@ const renderDayItemsList = (tripComponent, day, index) => {
 };
 
 const renderDaysList = (groupedItems) => {
+  if (groupedItems.length === 0) {
+    render(siteMainEventElement, new TripNoItemComponent().getElement(), RenderPosition.BEFOREEND);
+    return;
+  }
+
   const daysContainer = new TripDaysComponent();
 
   render(siteMainEventElement, daysContainer.getElement(), RenderPosition.BEFOREEND);
