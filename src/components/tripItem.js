@@ -59,12 +59,13 @@ const createOfferMarkup = (offers) => {
 
 /**
  * @param {TripItem} item
- * @return {string} - возвращает разметку для точки маршрта
+ *   @return {string} - возвращает разметку для точки маршрта
  */
 const createTripItemTemplate = (item) => {
   const {eventType, destination, price, startEventTime, endEventTime, offers} = item;
   const eventDuration = getEventDuration(startEventTime, endEventTime);
   const offerMarkup = createOfferMarkup(offers);
+
 
   return (
     `<li class="trip-events__item">
