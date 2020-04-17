@@ -1,5 +1,6 @@
 import {MONTH_NAMES} from "../const.js";
-import {getCurrentDateValue, getSimpleDate, createElement} from "../utils.js";
+import {getCurrentDateValue, getSimpleDate} from "../utils/common.js";
+import AbstractComponent from "./abstrackComponent.js";
 
 const createTripDurationMarkup = (dates) => {
   const lastDateIndex = dates.length - 1;
@@ -12,7 +13,7 @@ const createTripDurationMarkup = (dates) => {
 };
 
 
-export const createTripMainInfoTemplate = (items) => {
+const createTripMainInfoTemplate = (items) => {
   const tripCost = items.map((item) => item.price).reduce((acc, price) => acc + price);
   const tripDestinationInfo = items.map((item) => item.destination).join(` - `);
   const tripDates = items
@@ -43,25 +44,14 @@ export const createTripMainInfoTemplate = (items) => {
   );
 };
 
-export default class TripMainComponent {
+export default class TripMainComponent extends AbstractComponent {
   constructor(items) {
+    super();
     this._items = items;
-
-    this._element = null;
   }
 
   getTemplate() {
     return createTripMainInfoTemplate(this._items);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-  removeElement() {
-    this._element = null;
   }
 }
 

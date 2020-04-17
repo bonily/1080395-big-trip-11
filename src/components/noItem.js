@@ -1,4 +1,5 @@
-import {createElement} from "../utils.js";
+import AbstractComponent from "./abstrackComponent.js";
+
 
 const createNoItemTeplate = () => {
   return (
@@ -6,23 +7,9 @@ const createNoItemTeplate = () => {
   );
 };
 
-export default class TripNoItemComponent {
-  constructor() {
-    this._element = null;
-  }
-
+export default class TripNoItemComponent extends AbstractComponent {
   getTemplate() {
     return createNoItemTeplate();
   }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
-  }
 }
+

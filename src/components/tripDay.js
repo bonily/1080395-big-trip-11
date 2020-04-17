@@ -1,5 +1,5 @@
 import {MONTH_NAMES} from "../const.js";
-import {createElement} from "../utils.js";
+import AbstractCompinent from "./abstrackComponent.js";
 
 
 /**
@@ -33,27 +33,17 @@ const createTripDayTemplate = (day, dayIndex) => {
 };
 
 
-export default class TripDayComponent {
+export default class TripDayComponent extends AbstractCompinent {
   constructor(day, dayIndex) {
+    super();
+
     this._day = day;
-    this._element = null;
+
     this._index = dayIndex;
   }
 
   getTemplate() {
     return createTripDayTemplate(this._day, this._index);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

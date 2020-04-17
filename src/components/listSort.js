@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractCompinent from "./abstrackComponent.js";
 
 const createFlterMarkup = (filter) => {
   const isFilterAktive = () => filter.isActive ? `checked` : ``;
@@ -23,25 +23,14 @@ const createListSortTemplate = (filters) => {
   );
 };
 
-export default class SortListComponent {
+export default class SortListComponent extends AbstractCompinent {
   constructor(filters) {
-    this._element = null;
+    super();
+
     this._filters = filters;
   }
 
   getTemplate() {
     return createListSortTemplate(this._filters);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

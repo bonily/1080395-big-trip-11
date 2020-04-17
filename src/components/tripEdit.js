@@ -1,5 +1,5 @@
-import {getCurrentDateValue, createElement} from "../utils.js";
-
+import {getCurrentDateValue} from "../utils/common.js";
+import AbstractCompinent from "./abstrackComponent.js";
 
 const getDateTime = (date) => {
   const month = date.getMonth() + 1;
@@ -32,7 +32,8 @@ const createTripEditTemplate = (item) => {
   const offersMarkup = aviableOffers.map((aviableOffer) => createOfferMarkup(offers, aviableOffer)).join(`\n`);
   const photosMurkup = photos.map((photo) => createPhotosMarkup(photo)).join(`\n`);
   return (
-    `<form class="trip-events__item event  event--edit" action="#" method="post">
+    `<li>
+    <form class="trip-events__item event  event--edit" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -169,29 +170,24 @@ const createTripEditTemplate = (item) => {
                 </div>
               </section>
           </section>
-        </form>`
+        </form>
+      </li>`
   );
 };
 
 
-export default class TripEditComponent {
+export default class TripEditComponent extends AbstractCompinent {
   constructor(item) {
-    this._item = item;
+    super();
 
-    this._element = null;
+    this._item = item;
   }
 
   getTemplate() {
     return createTripEditTemplate(this._item);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-  removeElement() {
-    this._element = null;
+  setSubmitHandler(cb) {
+    this.getElement().addEventListener(`submit`, cb);
   }
 }

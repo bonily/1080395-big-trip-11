@@ -1,4 +1,5 @@
-import {getCurrentDateValue, createElement} from "../utils.js";
+import {getCurrentDateValue} from "../utils/common.js";
+import AbstractCompinent from "./abstrackComponent.js";
 
 
 /**
@@ -59,7 +60,7 @@ const createOfferMarkup = (offers) => {
 
 /**
  * @param {TripItem} item
- *   @return {string} - возвращает разметку для точки маршрта
+ * @return {string} - возвращает разметку для точки маршрта
  */
 const createTripItemTemplate = (item) => {
   const {eventType, destination, price, startEventTime, endEventTime, offers} = item;
@@ -103,24 +104,19 @@ const createTripItemTemplate = (item) => {
 };
 
 
-export default class TripItemComponent {
+export default class TripItemComponent extends AbstractCompinent {
   constructor(item) {
-    this._item = item;
+    super();
 
-    this._element = null;
+    this._item = item;
   }
 
   getTemplate() {
     return createTripItemTemplate(this._item);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-  removeElement() {
-    this._element = null;
+  setEditButtonHadler(cb) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, cb);
+
   }
 }
