@@ -23,12 +23,12 @@ const render = (container, component, place, specialPlace) => {
  * @param {Object} oldComponent
  */
 const replace = (newComponent, oldComponent) => {
-  const parentElement = oldComponent.getElement().parentElement;
-  console.log(parentElement);
+  let parentElement = oldComponent.getElement().parentElement;
   const newElement = newComponent.getElement();
   const oldElement = oldComponent.getElement();
 
   const isExistElements = !!(parentElement && newElement && oldElement);
+  parentElement.replaceChild(newElement, oldElement);
 
   if (isExistElements && parentElement.contains(oldElement)) {
     parentElement.replaceChild(newElement, oldElement);

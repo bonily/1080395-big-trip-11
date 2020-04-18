@@ -5,7 +5,7 @@ import AbstractComponent from "./abstrackComponent.js";
 const createTripDurationMarkup = (dates) => {
   const lastDateIndex = dates.length - 1;
   const startDate = `${MONTH_NAMES[dates[0].getMonth()]} ${getCurrentDateValue(dates[0].getDate())}`;
-  const endDate = () => dates[lastDateIndex].getMonth() === dates[0].getMonth() ? getCurrentDateValue(dates[lastDateIndex].getDate()) : `${MONTH_NAMES[dates[lastDateIndex].getMonth()]} ${getCurrentDateValue(dates[lastDateIndex].getDate())}`;
+  const endDate = dates[lastDateIndex].getMonth() === dates[0].getMonth() ? getCurrentDateValue(dates[lastDateIndex].getDate()) : `${MONTH_NAMES[dates[lastDateIndex].getMonth()]} ${getCurrentDateValue(dates[lastDateIndex].getDate())}`;
   return (
     `<p class="trip-info__dates">${startDate} &mdash;&nbsp;${endDate()}</p>`
   );
@@ -31,16 +31,15 @@ const createTripMainInfoTemplate = (items) => {
 
   return (
     `<section class="trip-main__trip-info  trip-info">
-    <div class="trip-info__main">
-      <h1 class="trip-info__title">${tripDestinationInfo}</h1>
-
-      ${tripDurationMarkup}
-    </div>
-
-    <p class="trip-info__cost">
-      Total: &euro;&nbsp;<span class="trip-info__cost-value">${tripCost}</span>
-    </p>
-  </section>`
+      <div class="trip-info__main">
+        <h1 class="trip-info__title">${tripDestinationInfo}</h1>
+          ${tripDurationMarkup}
+      </div>
+      <p class="trip-info__cost">
+        Total: &euro;&nbsp;
+        <span class="trip-info__cost-value">${tripCost}</span>
+      </p>
+    </section>`
   );
 };
 

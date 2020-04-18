@@ -5,14 +5,14 @@ import AbstractCompinent from "./abstrackComponent.js";
 /**
  * @param {array} day - массив точек маршрута для текущего дня
  * @param {number} dayIndex - порядковый номер дня путешествия
- * @return {string} - возращает разметку для 1 дня птешествия;
+ * @return {string} - возращает разметку для 1 дня путешествия;
  */
 
 const createTripDayTemplate = (day, dayIndex) => {
   const currentDate = day[0];
   const shortDate = currentDate
     .split(`-`)
-    .slice(1)
+    .slice(1) // Обрезает год, оставляя только месяц-день (согласно макету)
     .map((element, i) => {
       element = i === 0 ? MONTH_NAMES[Number(element - 1)] : element;
       return element;
@@ -25,9 +25,6 @@ const createTripDayTemplate = (day, dayIndex) => {
         <span class="day__counter">${dayIndex}</span>
         <time class="day__date" datetime="${currentDate}">${shortDate}</time>
       </div>
-      <ul class="trip-events__list">
-
-      </ul>
     </li>`
   );
 };

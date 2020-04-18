@@ -3,12 +3,11 @@
  * @return {string}
  */
 const getCurrentDateValue = (value) => {
-  return value > 9 ? value : (`0` + value);
+  return String(value).padStart(2, `0`);
 };
 
 const getSimpleDate = (date) => {
-  const targetDate = new Date(date);
-  const resultDate = `${targetDate.getFullYear()}-${getCurrentDateValue(targetDate.getMonth() + 1)}-${getCurrentDateValue(targetDate.getDate())}`;
+  const resultDate = `${date.getFullYear()}-${getCurrentDateValue(date.getMonth() + 1)}-${getCurrentDateValue(date.getDate())}`;
   return resultDate;
 };
 
@@ -35,5 +34,9 @@ const groupTripItems = (items) => {
   return Object.entries(transformItems).sort();
 };
 
+const capitalize = (name) => {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
 
-export {getCurrentDateValue, getSimpleDate, createElement, groupTripItems};
+
+export {getCurrentDateValue, getSimpleDate, createElement, groupTripItems, capitalize};
