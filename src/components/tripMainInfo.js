@@ -7,7 +7,7 @@ const createTripDurationMarkup = (dates) => {
   const startDate = `${MONTH_NAMES[dates[0].getMonth()]} ${getCurrentDateValue(dates[0].getDate())}`;
   const endDate = dates[lastDateIndex].getMonth() === dates[0].getMonth() ? getCurrentDateValue(dates[lastDateIndex].getDate()) : `${MONTH_NAMES[dates[lastDateIndex].getMonth()]} ${getCurrentDateValue(dates[lastDateIndex].getDate())}`;
   return (
-    `<p class="trip-info__dates">${startDate} &mdash;&nbsp;${endDate()}</p>`
+    `<p class="trip-info__dates">${startDate} &mdash;&nbsp;${endDate}</p>`
   );
 
 };
