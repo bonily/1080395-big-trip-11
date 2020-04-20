@@ -6,8 +6,8 @@ const createFlterMarkup = (filter) => {
   const isFilterAktive = () => filter.isActive ? `checked` : ``;
   return (
     `<div class="trip-sort__item  trip-sort__item--${filter.name}">
-      <input id="sort-event" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${filter.name}" ${isFilterAktive()}>
-      <label class="trip-sort__btn" for="sort-event">${capitalize(filter.name)}</label>
+      <input id="sort-${filter.name}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${filter.name}" ${isFilterAktive()}>
+      <label class="trip-sort__btn" for="sort-${filter.name}" data="${filter.name}">${capitalize(filter.name)}</label>
     </div>`
   );
 };
@@ -34,5 +34,19 @@ export default class SortListComponent extends AbstractCompinent {
 
   getTemplate() {
     return createListSortTemplate(this._filters);
+  }
+
+  setSortTypeChangeHandler(cb) {
+    this.getElement().addEventListener(`change`, (evt) => {
+      evt.preventDefault();
+
+      const sortType = evt.target.value.split(`-`)[1];
+      const daySortComponent = this.getElement().querySelector(`.trip-sort__item--day`);
+
+      daySortComponent.innerHTML = sortType !== `event` ? `` : `Day`;
+
+      cb(sortType);
+
+    });
   }
 }
