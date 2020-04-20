@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractCompinent from "./abstrackComponent.js";
 
 /**
  * @param {Object} trip  - объект с группированными по датам точкам путешествия, каждая уникальная дата = свойство
@@ -13,23 +13,8 @@ const createTripDaysTemplate = () => {
 };
 
 
-export default class TripDaysComponent {
-  constructor() {
-    this._element = null;
-  }
-
+export default class TripDaysComponent extends AbstractCompinent {
   getTemplate() {
     return createTripDaysTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

@@ -45,10 +45,10 @@ const generateEventItem = () => {
   };
 };
 
-const generateItems = (count) => {
+const generateEventItems = (count) => {
   return new Array(count)
     .fill(``)
     .map(generateEventItem);
 };
 
-export {generateEventItem, generateItems};
+export {generateEventItem, generateEventItems};

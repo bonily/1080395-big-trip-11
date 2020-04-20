@@ -1,6 +1,10 @@
-import {getCurrentDateValue, createElement} from "../utils.js";
+import {getCurrentDateValue, capitalize} from "../utils/common.js";
+import AbstractCompinent from "./abstrackComponent.js";
 
-
+/**
+ * @param {Date} date
+ * @return {string} - возвращает дату в формате число/месяц/год часы:минуты согласно
+ */
 const getDateTime = (date) => {
   const month = date.getMonth() + 1;
   return `${getCurrentDateValue(date.getDate())}/${getCurrentDateValue(month)}/${date.getFullYear().toString().split(``).slice(2).join(``)} ${getCurrentDateValue(date.getHours())}:${getCurrentDateValue(date.getMinutes())}`;
@@ -12,7 +16,7 @@ const createOfferMarkup = (offers, aviableOffer) => {
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-${aviableOffer.name}" ${isOfferChecked()}>
       <label class="event__offer-label" for="event-offer-${aviableOffer.name}-1">
-      <span class="event__offer-title">${aviableOffer.discription}/span>
+      <span class="event__offer-title">${aviableOffer.description}</span>
       &plus;
      &euro;&nbsp;<span class="event__offer-price">${aviableOffer.price}</span>
       </label>
@@ -27,8 +31,8 @@ const createPhotosMarkup = (photo) => {
   );
 };
 
-const createTripEditTemplate = (item) => {
-  const {eventType, destination, price, startEventTime, endEventTime, offers, aviableOffers, description, photos} = item;
+const createTripEditTemplate = ({eventType, destination, price, startEventTime, endEventTime, offers, aviableOffers, description, photos}) => {
+
   const offersMarkup = aviableOffers.map((aviableOffer) => createOfferMarkup(offers, aviableOffer)).join(`\n`);
   const photosMurkup = photos.map((photo) => createPhotosMarkup(photo)).join(`\n`);
   return (
@@ -104,7 +108,7 @@ const createTripEditTemplate = (item) => {
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              ${eventType.charAt(0).toUpperCase() + eventType.slice(1)} to
+              ${capitalize(eventType)} to
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
             <datalist id="destination-list-1">
@@ -174,24 +178,18 @@ const createTripEditTemplate = (item) => {
 };
 
 
-export default class TripEditComponent {
+export default class TripEditComponent extends AbstractCompinent {
   constructor(item) {
-    this._item = item;
+    super();
 
-    this._element = null;
+    this._item = item;
   }
 
   getTemplate() {
     return createTripEditTemplate(this._item);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-  removeElement() {
-    this._element = null;
+  setSubmitHandler(cb) {
+    this.getElement().addEventListener(`submit`, cb);
   }
 }
