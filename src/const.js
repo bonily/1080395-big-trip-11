@@ -25,8 +25,8 @@ export const MONTH_NAMES = [
 ];
 
 export const SORT_FILTERS = [
-  {name: `event`, isActive: false},
-  {name: `time`, isActive: true},
+  {name: `event`, isActive: true},
+  {name: `time`, isActive: false},
   {name: `price`, isActive: false},
 ];
 

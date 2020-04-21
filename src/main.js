@@ -1,6 +1,5 @@
 import TripController from "./controllers/tripController.js";
 import {generateEventItems} from "./mock/trip.js";
-import {groupTripItems} from "./utils/common.js";
 import {render, RenderPosition} from "./utils/render.js";
 import {MAIN_FILTERS} from "./const.js";
 import TripMainComponent from "./components/tripMainInfo.js";
@@ -26,6 +25,6 @@ render(siteHeaderMenuElement, new TripMainFilterComponent(MAIN_FILTERS), RenderP
 
 render(siteMainEventElement, boardContainer, RenderPosition.BEFOREEND);
 
-tripController.render(groupTripItems(items));
+tripController.render(items);
 
 

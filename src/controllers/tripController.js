@@ -7,6 +7,7 @@ import {render, RenderPosition, replace} from "../utils/render.js";
 import TripItemsListTemplate from "../components/tripItems.js";
 import SortListComponent from "../components/listSort.js";
 import {SORT_FILTERS} from "../const.js";
+import {groupTripItems} from "../utils/common.js";
 
 
 const renderItem = (itemListElement, item) => {
@@ -51,10 +52,11 @@ const renderItem = (itemListElement, item) => {
 };
 
 
-const renderDayItemsList = (tripComponent, day, index) => {
+const renderDayItemsList = ({tripComponent, day, index, items}) => {
   const dayContainer = new TripDayComponent(day, index);
+  console.log(day)
 
-  const dayItems = day[1];
+  const dayItems = (day) ? day[1] : items;
 
   render(tripComponent, dayContainer, RenderPosition.BEFOREEND);
 
@@ -62,6 +64,21 @@ const renderDayItemsList = (tripComponent, day, index) => {
 
   dayItems.forEach((dayItem) => renderItem(itemListElement.getElement(), dayItem));
   render(dayContainer.getElement(), itemListElement, RenderPosition.BEFOREEND);
+};
+
+const gerSortedItems = (items, sortType) => {
+  const durationMs = (item) => item.endEventTime.getTime() - item.startEventTime.getTime();
+  let sortedItems = [];
+  const showingItems = items.slice();
+  switch (sortType) {
+    case `price`:
+      sortedItems = showingItems.sort((a, b) => a.price - b.price);
+      break;
+    case `time` :
+      sortedItems = showingItems.sort((a, b) => durationMs(a) - durationMs(b));
+      break;
+  }
+  return sortedItems;
 };
 
 
@@ -84,8 +101,29 @@ export default class TripController {
 
     render(this._container, this._daysComponent, RenderPosition.BEFOREEND);
 
-    const tripDaysList = this._daysComponent.getElement();
+    const tripDaysListComponent = this._daysComponent.getElement();
+    const groupedItems = groupTripItems(items);
 
-    items.forEach((item, i) => renderDayItemsList(tripDaysList, item, i + 1));
+    groupedItems.forEach((item, i) => renderDayItemsList({
+      tripComponent: tripDaysListComponent,
+      day: item,
+      index: (i + 1)
+    }));
+
+    this._sortListComponent.setSortTypeChangeHandler((sortType) => {
+      tripDaysListComponent.innerHTML = ``;
+      if (sortType === `event`) {
+        groupedItems.forEach((item, i) => renderDayItemsList({
+          tripComponent: tripDaysListComponent,
+          day: item,
+          index: (i + 1)
+        }));
+      }
+      renderDayItemsList({
+        tripComponent: tripDaysListComponent,
+        items: gerSortedItems(items, sortType)
+      });
+    });
+
   }
 }

@@ -9,24 +9,30 @@ import AbstractCompinent from "./abstrackComponent.js";
  */
 
 const createTripDayTemplate = (day, dayIndex) => {
-  const currentDate = day[0];
-  const shortDate = currentDate
-    .split(`-`)
-    .slice(1) // Обрезает год, оставляя только месяц-день (согласно макету)
-    .map((element, i) => {
-      element = i === 0 ? MONTH_NAMES[Number(element - 1)] : element;
-      return element;
-    })
-    .join(` `);
-
-  return (
-    `<li class="trip-days__item  day">
-      <div class="day__info">
-        <span class="day__counter">${dayIndex}</span>
-        <time class="day__date" datetime="${currentDate}">${shortDate}</time>
-      </div>
-    </li>`
-  );
+  if (day) {
+    const currentDate = day[0];
+    const shortDate = currentDate
+       .split(`-`)
+       .slice(1) // Обрезает год, оставляя только месяц-день (согласно макету)
+        .map((element, i) => {
+          element = i === 0 ? MONTH_NAMES[Number(element - 1)] : element;
+          return element;
+        })
+          .join(` `);
+    return (
+      `<li class="trip-days__item  day">
+        <div class="day__info">
+          <span class="day__counter">${dayIndex}</span>
+            <time class="day__date" datetime="${currentDate}">${shortDate}</time>
+        </div>
+      </li>`);
+  } else {
+    return (
+      `<li class="trip-days__item  day">
+        <div class="day__info">
+        </div>
+      </li>`);
+  }
 };
 
 
