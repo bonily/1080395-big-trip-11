@@ -1,4 +1,4 @@
-import AbstractCompinent from "./abstrackComponent.js";
+import AbstractCompinent from "./abstractComponent.js";
 import {capitalize} from "../utils/common.js";
 
 

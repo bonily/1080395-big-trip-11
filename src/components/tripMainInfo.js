@@ -1,6 +1,6 @@
 import {MONTH_NAMES} from "../const.js";
 import {getCurrentDateValue, getSimpleDate} from "../utils/common.js";
-import AbstractComponent from "./abstrackComponent.js";
+import AbstractComponent from "./abstractComponent.js";
 
 const createTripDurationMarkup = (dates) => {
   const lastDateIndex = dates.length - 1;

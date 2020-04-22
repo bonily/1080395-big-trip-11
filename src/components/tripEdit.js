@@ -1,5 +1,5 @@
 import {getCurrentDateValue, capitalize} from "../utils/common.js";
-import AbstractCompinent from "./abstrackComponent.js";
+import AbstractSmartComponent from "./abstractSmartComponent.js";
 
 /**
  * @param {Date} date
@@ -24,14 +24,13 @@ const createOfferMarkup = (offers, aviableOffer) => {
   );
 };
 
-
 const createPhotosMarkup = (photo) => {
   return (
     `<img class="event__photo" src="${photo}" alt="Event photo">`
   );
 };
 
-const createTripEditTemplate = ({eventType, destination, price, startEventTime, endEventTime, offers, aviableOffers, description, photos}) => {
+const createTripEditTemplate = ({eventType, destination, price, startEventTime, endEventTime, offers, aviableOffers, description, photos, isFavorite}) => {
 
   const offersMarkup = aviableOffers.map((aviableOffer) => createOfferMarkup(offers, aviableOffer)).join(`\n`);
   const photosMurkup = photos.map((photo) => createPhotosMarkup(photo)).join(`\n`);
@@ -141,7 +140,7 @@ const createTripEditTemplate = ({eventType, destination, price, startEventTime, 
             <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
             <button class="event__reset-btn" type="reset">Delete</button>
 
-            <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+            <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
             <label class="event__favorite-btn" for="event-favorite-1">
               <span class="visually-hidden">Add to favorite</span>
               <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -178,18 +177,41 @@ const createTripEditTemplate = ({eventType, destination, price, startEventTime, 
 };
 
 
-export default class TripEditComponent extends AbstractCompinent {
+export default class TripEditComponent extends AbstractSmartComponent {
   constructor(item) {
     super();
 
     this._item = item;
+    this._submitCb = null;
   }
 
   getTemplate() {
     return createTripEditTemplate(this._item);
   }
 
+  rerender() {
+    super.rerender();
+  }
+
+  setFavoriteButtonClickHandler(cb) {
+    this.getElement().querySelector(`.event__favorite-checkbox`)
+     .addEventListener(`change`, (evt) => {
+       evt.preventDefault();
+       cb();
+     });
+  }
+
   setSubmitHandler(cb) {
     this.getElement().addEventListener(`submit`, cb);
+
+    this._submitCb = cb;
+  }
+
+  recoveryListeners() {
+    this.setSubmitHandler(this._submitCb);
+  }
+
+  reset() {
+    this.rerender();
   }
 }
