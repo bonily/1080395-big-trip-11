@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstrackComponent.js";
+import AbstractComponent from "./abstractComponent.js";
 
 
 const createBoardTemplate = () => {

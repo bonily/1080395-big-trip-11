@@ -1,5 +1,5 @@
 import {getCurrentDateValue, capitalize} from "../utils/common.js";
-import AbstractCompinent from "./abstrackComponent.js";
+import AbstractComponent from "./abstractComponent.js";
 
 
 /**
@@ -98,7 +98,7 @@ const createTripItemTemplate = ({eventType, destination, price, startEventTime, 
 };
 
 
-export default class TripItemComponent extends AbstractCompinent {
+export default class TripItemComponent extends AbstractComponent {
   constructor(item) {
     super();
 

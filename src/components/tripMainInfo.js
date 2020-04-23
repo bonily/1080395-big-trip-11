@@ -1,6 +1,6 @@
 import {MONTH_NAMES} from "../const.js";
 import {getCurrentDateValue, getSimpleDate} from "../utils/common.js";
-import AbstractComponent from "./abstrackComponent.js";
+import AbstractComponent from "./abstractComponent.js";
 
 const createTripDurationMarkup = (dates) => {
   const lastDateIndex = dates.length - 1;
@@ -12,10 +12,13 @@ const createTripDurationMarkup = (dates) => {
 
 };
 
+const createTripDestinationMarkup = (items) => {
+  return items.length < 3 ? items.map((item) => item.destination).join(` - `) : [].concat(items.slice(0, 1), items.slice(items.length - 1)).map((item) => item.destination).join(` — … — `);
+};
 
 const createTripMainInfoTemplate = (items) => {
   const tripCost = items.map((item) => item.price).reduce((acc, price) => acc + price);
-  const tripDestinationInfo = items.map((item) => item.destination).join(` - `);
+  const tripDestinationInfo = createTripDestinationMarkup(items);
   const tripDates = items
                     .map((item) => item.startEventTime)
                     .sort((a, b) => {

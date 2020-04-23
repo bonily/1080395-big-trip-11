@@ -1,4 +1,4 @@
-import AbstractCompinent from "./abstrackComponent.js";
+import AbstractCompinent from "./abstractComponent.js";
 
 /**
  * @param {Object} trip  - объект с группированными по датам точкам путешествия, каждая уникальная дата = свойство
