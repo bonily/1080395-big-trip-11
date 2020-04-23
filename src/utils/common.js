@@ -34,8 +34,9 @@ const groupTripItems = (items) => {
   return Object.entries(transformItems).sort();
 };
 
-const capitalize = (name) => {
-  return name.charAt(0).toUpperCase() + name.slice(1);
+const capitalize = (type) => {
+  type = type === `check` ? `check-in` : type;
+  return type.charAt(0).toUpperCase() + type.slice(1);
 };
 
 

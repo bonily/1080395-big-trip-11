@@ -9,7 +9,7 @@ import {groupTripItems} from "../utils/common.js";
 import ItemController from "./itemController.js";
 
 
-const renderDayItemsList = ({tripComponent, day, index, items, onDataChange}) => {
+const renderDayItemsList = ({tripComponent, day, index, items, onDataChange, instans, onViewChange}) => {
   const dayContainer = new TripDayComponent(day, index);
 
   const dayItems = (day) ? day[1] : items;
@@ -21,9 +21,10 @@ const renderDayItemsList = ({tripComponent, day, index, items, onDataChange}) =>
   render(dayContainer.getElement(), itemListElement, RenderPosition.BEFOREEND);
 
   return dayItems.map((item) => {
-    const itemController = new ItemController(itemListElement.getElement(), onDataChange);
+    const itemController = new ItemController(itemListElement.getElement(), onDataChange, onViewChange);
 
     itemController.render(item);
+    instans.push(itemController);
     return itemController;
   });
 };
@@ -53,13 +54,14 @@ export default class TripController {
     this._sortListComponent = new SortListComponent(SORT_FILTERS);
     this._tripDaysListComponent = this._daysComponent.getElement();
     this._showedItemControllers = [];
+
     this._items = [];
     this._groupedItems = [];
 
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._sortListComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._onDataChange = this._onDataChange.bind(this);
-
+    this.onViewChange = this._onViewChange.bind(this);
   }
 
   render(items) {
@@ -75,19 +77,13 @@ export default class TripController {
 
     render(this._container, this._daysComponent, RenderPosition.BEFOREEND);
 
-    const showingItems = renderDayItemsList({
-      tripComponent: this._tripDaysListComponent,
-      items: this._items,
-      onDataChange: this._onDataChange
-    });
-
-    console.log(showingItems);
-
     this._groupedItems.forEach((item, i) => renderDayItemsList({
       tripComponent: this._tripDaysListComponent,
       day: item,
       index: (i + 1),
-      onDataChange: this._onDataChange
+      onDataChange: this.onDataChange,
+      instans: this._showedItemControllers,
+      onViewChange: this.onViewChange
     }));
   }
 
@@ -98,19 +94,27 @@ export default class TripController {
         tripComponent: this._tripDaysListComponent,
         day: item,
         index: (i + 1),
-        onDataChange: this._onDataChange
+        onDataChange: this.onDataChange,
+        instans: this._showedItemControllers,
+        onViewChange: this.onViewChange
       }));
     }
+
     renderDayItemsList({
       tripComponent: this._tripDaysListComponent,
       items: gerSortedItems(this._items, sortType),
-      onDataChange: this._onDataChange
+      onDataChange: this.onDataChange,
+      instans: this._showedItemControllers,
+      onViewChange: this.onViewChange
     });
   }
 
-  _onDataChange(itemController, oldData, newData) {
+  onDataChange(callback, oldData, newData) {
+    this._onDataChange(callback, oldData, newData);
+  }
+
+  _onDataChange(callback, oldData, newData) {
     const index = this._items.findIndex((it) => it === oldData);
-    console.log(oldData, newData);
 
     if (index === -1) {
       return;
@@ -118,6 +122,14 @@ export default class TripController {
 
     this._items = [].concat(this._items.slice(0, index), newData, this._items.slice(index + 1));
 
-    itemController.render(this._items[index]);
+    callback(this._items[index]);
+  }
+
+  onViewChange() {
+    this._onViewChange();
+  }
+
+  _onViewChange() {
+    this._showedItemControllers.forEach((it) => it.setDefaultView());
   }
 }

@@ -637,7 +637,7 @@ main {
   .event__type-label--flight::before {
     background-image: url("../img/icons/flight.png"); }
   .event__type-label--check-in::before {
-    background-image: url("../img/icons/check-in.png"); }
+    background-image: url("../img/icons/check.png"); }
   .event__type-label--sightseeing::before {
     background-image: url("../img/icons/sightseeing.png"); }
   .event__type-label--restaurant::before {

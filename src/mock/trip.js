@@ -4,6 +4,8 @@ const descriptionText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit
 
 const descriptionSentences = descriptionText.split(`. `);
 
+
+
 const getRandomIntegerNumber = (min, max) => {
   return min + Math.floor(Math.random() * (max - min));
 };
@@ -27,6 +29,16 @@ const getRandomTimeFromCurrent = (date) => {
   return resultData;
 };
 
+const cretateDescription = (destinations) => {
+  const directory = {};
+  destinations.forEach((it) => {
+    directory[it] = getRandomArray(descriptionSentences, 1, 5).join(`. `);
+  });
+  return directory;
+};
+
+const Description = cretateDescription(DESTINATIONS);
+
 const generateEventItem = () => {
   const targetDate = getRandomTimeFromCurrent(new Date());
   const aviableOffers = getRandomArray(OFFERS, 0);
@@ -38,7 +50,6 @@ const generateEventItem = () => {
     endEventTime: getRandomTimeFromCurrent(targetDate),
     offers: getRandomArray(aviableOffers, 0),
     aviableOffers,
-    description: getRandomArray(descriptionSentences, 1, 5).join(`. `),
     photos: new Array(getRandomIntegerNumber(1, 8))
       .fill(``)
       .map(() => `http://picsum.photos/248/152?r=${Math.random()}`),
@@ -52,4 +63,4 @@ const generateEventItems = (count) => {
     .map(generateEventItem);
 };
 
-export {generateEventItem, generateEventItems};
+export {generateEventItem, generateEventItems, Description};

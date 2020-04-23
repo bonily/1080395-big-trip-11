@@ -12,10 +12,13 @@ const createTripDurationMarkup = (dates) => {
 
 };
 
+const createTripDestinationMarkup = (items) => {
+  return items.length < 3 ? items.map((item) => item.destination).join(` - `) : [].concat(items.slice(0, 1), items.slice(items.length - 1)).map((item) => item.destination).join(` — … — `);
+};
 
 const createTripMainInfoTemplate = (items) => {
   const tripCost = items.map((item) => item.price).reduce((acc, price) => acc + price);
-  const tripDestinationInfo = items.map((item) => item.destination).join(` - `);
+  const tripDestinationInfo = createTripDestinationMarkup(items);
   const tripDates = items
                     .map((item) => item.startEventTime)
                     .sort((a, b) => {
