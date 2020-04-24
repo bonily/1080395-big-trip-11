@@ -1,3 +1,5 @@
+import moment from "moment";
+
 /**
  * @param {number} value - добавляет 0 перед месяцем или числом, для отображения даты согласно разметки
  * @return {string}
@@ -7,8 +9,9 @@ const getCurrentDateValue = (value) => {
 };
 
 const getSimpleDate = (date) => {
-  const resultDate = `${date.getFullYear()}-${getCurrentDateValue(date.getMonth() + 1)}-${getCurrentDateValue(date.getDate())}`;
-  return resultDate;
+  // const resultDate = `${date.getFullYear()}-${getCurrentDateValue(date.getMonth() + 1)}-${getCurrentDateValue(date.getDate())}`;
+  // console.log(resultDate)
+  return moment(date).format(`YYYY-MM-DD`);
 };
 
 const createElement = (template) => {
