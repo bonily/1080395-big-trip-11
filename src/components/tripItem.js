@@ -1,5 +1,7 @@
-import {getCurrentDateValue, capitalize} from "../utils/common.js";
+import {capitalize} from "../utils/common.js";
 import AbstractComponent from "./abstractComponent.js";
+import moment from "moment";
+import "moment-duration-format";
 
 
 /**
@@ -9,12 +11,7 @@ import AbstractComponent from "./abstractComponent.js";
  */
 const getEventDuration = (start, end) => {
   const duretionMs = end.getTime() - start.getTime();
-  const durationTime = new Date(`1970-01-01T00:00`);
-  durationTime.setMilliseconds(duretionMs);
-  const days = durationTime.getDate() - 1;
-  const hours = durationTime.getHours();
-  const minutes = durationTime.getMinutes();
-  return `${days > 0 ? getCurrentDateValue(days) + `D` : ``} ${hours > 0 ? getCurrentDateValue(hours) + `H` : ``} ${minutes > 0 ? getCurrentDateValue(minutes) + `M` : ``}`;
+  return moment.duration(duretionMs, `milliseconds`).format(`DD[D] hh[H] mm[M]`);
 };
 
 /**
@@ -22,8 +19,11 @@ const getEventDuration = (start, end) => {
  * @return {string} - возвращает строковоу представление даты для атрибута datetime формата год-месяц-числоTчасы:минуты;
  */
 const getDateTime = (date) => {
-  const month = date.getMonth() + 1;
-  return `${date.getFullYear()}-${getCurrentDateValue(month)}-${getCurrentDateValue(date.getDate())}T${getCurrentDateValue(date.getHours())}:${getCurrentDateValue(date.getMinutes())}`;
+  return moment(date).format(`YYYY-MM-DDThh:mm`);
+};
+
+const getShortTime = (date) => {
+  return moment(date).format(`hh:mm`);
 };
 
 /** @typedef {Object} Offer
@@ -76,9 +76,9 @@ const createTripItemTemplate = ({eventType, destination, price, startEventTime, 
           <h3 class="event__title">${capitalize(eventType)} to ${destination}</h3>
           <div class="event__schedule">
             <p class="event__time">
-              <time class="event__start-time" datetime="${getDateTime(startEventTime)}">${getCurrentDateValue(startEventTime.getHours()) + `:` + getCurrentDateValue(startEventTime.getMinutes())}</time>
+              <time class="event__start-time" datetime="${getDateTime(startEventTime)}">${getShortTime(startEventTime)}</time>
                 &mdash;
-              <time class="event__end-time" datetime="${getDateTime(endEventTime)}">${getCurrentDateValue(endEventTime.getHours()) + `:` + getCurrentDateValue(endEventTime.getMinutes())}</time>
+              <time class="event__end-time" datetime="${getDateTime(endEventTime)}">${getShortTime(endEventTime)}</time>
             </p>
             <p class="event__duration">${eventDuration}</p>
           </div>

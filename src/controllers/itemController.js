@@ -29,7 +29,7 @@ export default class ItemController {
     this._itemEditComponent = new TripEditComponent(item);
 
     this._itemEditComponent.setFavoriteButtonClickHandler(() => {
-      this._onDataChange(this.render, item, Object.assign({}, item, {
+      this._onDataChange(item, Object.assign({}, item, {
         isFavorite: !item.isFavorite,
       }));
     });

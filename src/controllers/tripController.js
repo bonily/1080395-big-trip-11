@@ -24,7 +24,11 @@ const renderDayItemsList = ({tripComponent, day, index, items, onDataChange, ins
     const itemController = new ItemController(itemListElement.getElement(), onDataChange, onViewChange);
 
     itemController.render(item);
-    instans.push(itemController);
+
+    if (instans.indexOf(itemController) === -1) {
+      instans.push(itemController);
+    }
+
     return itemController;
   });
 };
@@ -61,6 +65,7 @@ export default class TripController {
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._sortListComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._onDataChange = this._onDataChange.bind(this);
+    this.onDataChange = this._onDataChange.bind(this);
     this.onViewChange = this._onViewChange.bind(this);
   }
 
@@ -85,6 +90,7 @@ export default class TripController {
       instans: this._showedItemControllers,
       onViewChange: this.onViewChange
     }));
+
   }
 
   _onSortTypeChange(sortType) {
@@ -109,11 +115,11 @@ export default class TripController {
     });
   }
 
-  onDataChange(callback, oldData, newData) {
-    this._onDataChange(callback, oldData, newData);
+  onDataChange(oldData, newData) {
+    this._onDataChange(oldData, newData);
   }
 
-  _onDataChange(callback, oldData, newData) {
+  _onDataChange(oldData, newData) {
     const index = this._items.findIndex((it) => it === oldData);
 
     if (index === -1) {
@@ -122,7 +128,7 @@ export default class TripController {
 
     this._items = [].concat(this._items.slice(0, index), newData, this._items.slice(index + 1));
 
-    callback(this._items[index]);
+    this._showedItemControllers[index].render(this._items[index]);
   }
 
   onViewChange() {

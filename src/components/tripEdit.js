@@ -1,6 +1,9 @@
 import {getCurrentDateValue, capitalize} from "../utils/common.js";
 import AbstractSmartComponent from "./abstractSmartComponent.js";
 import {Description} from "../mock/trip.js";
+import flatpickr from "flatpickr";
+
+import "flatpickr/dist/flatpickr.min.css";
 
 /**
  * @param {Date} date
@@ -15,7 +18,7 @@ const createOfferMarkup = (offers, aviableOffer) => {
   const isOfferChecked = () => offers.indexOf(aviableOffer) > -1 ? `checked` : ``;
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-${aviableOffer.name}" ${isOfferChecked()}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${aviableOffer.name}" type="checkbox" name="event-offer-${aviableOffer.name}" ${isOfferChecked()}>
       <label class="event__offer-label" for="event-offer-${aviableOffer.name}-1">
       <span class="event__offer-title">${aviableOffer.description}</span>
       &plus;
@@ -189,6 +192,10 @@ export default class TripEditComponent extends AbstractSmartComponent {
 
     this._item = item;
     this._submitCb = null;
+
+    this._flatpickr = null;
+    this._applyFlatpickr();
+
   }
 
   getTemplate() {
@@ -205,6 +212,8 @@ export default class TripEditComponent extends AbstractSmartComponent {
 
   rerender() {
     super.rerender();
+
+    this._applyFlatpickr();
 
   }
 
@@ -226,6 +235,25 @@ export default class TripEditComponent extends AbstractSmartComponent {
         this._item.destination = evt.target.value;
         this.rerender();
       }
+    });
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
+
+    dateElements.forEach((dateElement) => {
+      const typeEventDate = dateElement.name.split(`-`)[1] + `EventTime`;
+      this._flatpickr = flatpickr(dateElement, {
+        allowInput: true,
+        defaultDate: this._item[typeEventDate],
+        enableTime: true,
+        dateFormat: `d/m/y H:i`
+      });
     });
   }
 
