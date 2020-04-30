@@ -12,15 +12,15 @@ const getCurrentDateFromValue = (value) => {
   return dateString;
 };
 
-const createOfferMarkup = (offers, aviableOffer) => {
-  const isOfferChecked = () => offers.indexOf(aviableOffer) > -1 ? `checked` : ``;
+const createOfferMarkup = (offer) => {
+  const isOfferChecked = () => offer.checked ? `checked` : ``;
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${aviableOffer.name}" type="checkbox" name="event-offer-${aviableOffer.name}" ${isOfferChecked()}>
-      <label class="event__offer-label" for="event-offer-${aviableOffer.name}-1">
-      <span class="event__offer-title">${aviableOffer.description}</span>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.name}" type="checkbox" name="event-offer" value="${offer.name}" ${isOfferChecked()}>
+      <label class="event__offer-label" for="event-offer">
+      <span class="event__offer-title">${offer.description}</span>
       &plus;
-     &euro;&nbsp;<span class="event__offer-price">${aviableOffer.price}</span>
+     &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
       </label>
      </div>`
   );
@@ -64,9 +64,9 @@ const createNotNewItemElementMarkup = (isFavorite) => {
   );
 };
 
-const createTripEditTemplate = ({id, eventType, destination, price, startEventTime, endEventTime, offers, aviableOffers, isFavorite}) => {
+const createTripEditTemplate = ({id, eventType, destination, price, startEventTime, endEventTime, offers, isFavorite}) => {
   const notNewItemElementMarkup = id !== 0 ? createNotNewItemElementMarkup(isFavorite) : ` `;
-  const offersMarkup = aviableOffers.map((aviableOffer) => createOfferMarkup(offers, aviableOffer)).join(`\n`);
+  const offersMarkup = offers.map((offer) => createOfferMarkup(offer)).join(`\n`);
   const descriptionMarup = destination === `` ? ` ` : createDestinationMarkup(destination);
 
   return (
@@ -198,14 +198,18 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
 };
 
 const parseFormData = (formData) => {
+  console.log(formData.getAll(`event-offer`));
+  const offers = OFFERS.slice().map((offer) => {
+    offer.checked = false;
+    return offer;
+  })
   return {
     eventType: formData.get(`event-type`),
     destination: formData.get(`event-destination`),
     price: formData.get(`event-price`),
     startEventTime: new Date(getCurrentDateFromValue(formData.get(`event-start-time`))),
     endEventTime: new Date(getCurrentDateFromValue(formData.get(`event-end-time`))),
-    offers: OFFERS,
-    aviableOffers: [],
+    offers,
   };
 };
 
@@ -264,7 +268,7 @@ export default class TripEditComponent extends AbstractSmartComponent {
 
   setOnChangeTransferHandler() {
     this.getElement().addEventListener(`change`, (evt) => {
-      console.log(evt.target.name);
+      console.log(evt);
       switch (evt.target.name) {
         case `event-type`:
           if (evt.target.value === `on`) {

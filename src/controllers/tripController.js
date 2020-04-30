@@ -9,7 +9,6 @@ import {groupTripItems} from "../utils/common.js";
 import ItemController, {EmptyTask} from "./itemController.js";
 
 
-
 const renderDayItemsList = ({tripComponent, day, index, items, onDataChange, instans, onViewChange, onDeleteItem, onNewItem}) => {
   const dayContainer = new TripDayComponent(day, index);
 

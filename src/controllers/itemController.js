@@ -17,8 +17,10 @@ export const EmptyTask = {
   price: 0,
   startEventTime: new Date(),
   endEventTime: new Date(),
-  offers: [],
-  aviableOffers: OFFERS,
+  offers: OFFERS.map((offer) => {
+    offer.checked = false;
+    return offer;
+  })
 };
 
 export default class ItemController {

@@ -57,7 +57,7 @@ const createOfferMarkup = (offers) => {
  */
 const createTripItemTemplate = ({eventType, destination, price, startEventTime, endEventTime, offers}) => {
   const eventDuration = getEventDuration(startEventTime, endEventTime);
-  const offerMarkup = createOfferMarkup(offers);
+  const offerMarkup = createOfferMarkup(offers.filter((offer) => offer.checked === true));
 
 
   return (

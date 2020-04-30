@@ -40,7 +40,6 @@ const Description = cretateDescription(DESTINATIONS);
 
 const generateEventItem = () => {
   const targetDate = getRandomTimeFromCurrent(new Date());
-  const aviableOffers = getRandomArray(OFFERS, 0);
   return {
     id: Date.parse(new Date()) + Math.random(),
     eventType: getRandomArrayItem(EVENT_TYPES),
@@ -48,8 +47,7 @@ const generateEventItem = () => {
     price: getRandomIntegerNumber(0, 300),
     startEventTime: targetDate,
     endEventTime: getRandomTimeFromCurrent(targetDate),
-    offers: getRandomArray(aviableOffers, 0),
-    aviableOffers,
+    offers: getRandomArray(OFFERS, 0),
     isFavorite: Math.random() > 0.5
   };
 };

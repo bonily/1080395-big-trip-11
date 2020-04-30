@@ -20,15 +20,15 @@ export const DESTINATION_PHOTOS = {
   Lisboa: new Array(getRandomIntegerNumber(1, 8))
               .fill(``)
               .map(() => `http://picsum.photos/248/152?r=${Math.random()}`),
-}
+};
 
 export const OFFERS = [
-  {name: `car`, price: 200, description: `Rent a car`},
-  {name: `meal`, price: 50, description: `Add a breakfast`},
-  {name: `comfort`, price: 100, description: `Switch to comfort`},
-  {name: `luggage`, price: 30, description: `Add luggage`},
-  {name: `seat`, price: 5, description: `Choose seats`},
-  {name: `train`, price: 40, description: `Travel by train`}];
+  {name: `car`, price: 200, description: `Rent a car`, checked: true},
+  {name: `meal`, price: 50, description: `Add a breakfast`, checked: true},
+  {name: `comfort`, price: 100, description: `Switch to comfort`, checked: false},
+  {name: `luggage`, price: 30, description: `Add luggage`, checked: true},
+  {name: `seat`, price: 5, description: `Choose seats`, checked: false},
+  {name: `train`, price: 40, description: `Travel by train`, checked: true}];
 
 export const MONTH_NAMES = [
   `JAN`,
