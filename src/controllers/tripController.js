@@ -174,6 +174,7 @@ export default class TripController {
   }
 
   _onViewChange() {
+    this._creatingNewItem = null;
     this._showedItemControllers.forEach((it) => it.setDefaultView());
   }
 
@@ -202,8 +203,13 @@ export default class TripController {
       return;
     }
 
+
+    this._onViewChange();
+
     this._creatingNewItem = new ItemController(this._tripDaysListComponent, this.onDataChange, this.onViewChange, this.onDeleteItem, this.onNewItem);
-    this._creatingNewItem.render(EmptyTask, `new`);
+    this._creatingNewItem.render(Object.assign({}, EmptyTask), `new`);
+    this._showedItemControllers.push(this._creatingNewItem);
+
 
   }
 }

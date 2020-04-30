@@ -60,10 +60,9 @@ export default class ItemController {
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    this._itemEditComponent.setSubmitHandler((evt) => {
-      evt.preventDefault();
+    this._itemEditComponent.setSubmitHandler(() => {
       const data = this._itemEditComponent.getData();
-      if (mode === `new`) {
+      if (mode === Mode.NEW) {
         this._onNewItem(data);
         return;
       }
@@ -74,6 +73,7 @@ export default class ItemController {
     });
 
     this._itemEditComponent.setOnChangeTransferHandler();
+    this._itemEditComponent.setCheckValueHandler();
 
     this._itemEditComponent.setDeleteHandler((evt) => {
       this._onDeleteItem(item.id);
@@ -81,6 +81,7 @@ export default class ItemController {
     });
 
     if (mode === `new`) {
+      this._mode = Mode.NEW;
       render(this._container, this._itemEditComponent, RenderPosition.AFTERBEGIN);
     }
 
@@ -120,7 +121,9 @@ export default class ItemController {
   }
 
   setDefaultView() {
-    if (this._mode !== Mode.DEFAULT) {
+    if (this._mode === Mode.NEW) {
+      this.destroy();
+    } else if (this._mode === Mode.EDIT) {
       this._replaceEditToItem();
     }
   }

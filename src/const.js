@@ -30,6 +30,39 @@ export const OFFERS = [
   {name: `seat`, price: 5, description: `Choose seats`, checked: false},
   {name: `train`, price: 40, description: `Travel by train`, checked: true}];
 
+export const OFFERS_MAP = {
+  car: {
+    price: 200,
+    description: `Rent a car`,
+  },
+
+  meal: {
+    price: 50,
+    description: `Add a breakfast`,
+  },
+
+  comfort: {
+    price: 100,
+    description: `Switch to comfort`,
+  },
+
+  luggage: {
+    price: 30,
+    description: `Add luggage`,
+  },
+
+  seat: {
+    price: 5,
+    description: `Choose seats`,
+  },
+
+  train: {
+    price: 40,
+    description: `Travel by train`,
+  },
+
+};
+
 export const MONTH_NAMES = [
   `JAN`,
   `FEB`,

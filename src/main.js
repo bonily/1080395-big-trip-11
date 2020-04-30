@@ -32,8 +32,5 @@ tripController.render();
 filterController.render();
 
 newItemButton.addEventListener(`click`, () => {
-  console.log(`fghjkl;`)
   tripController.createNewItem();
-})
-
-
+});

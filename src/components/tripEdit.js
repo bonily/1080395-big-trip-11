@@ -2,7 +2,7 @@ import {capitalize, getDateTime} from "../utils/common.js";
 import AbstractSmartComponent from "./abstractSmartComponent.js";
 import {Description} from "../mock/trip.js";
 import flatpickr from "flatpickr";
-import {DESTINATION_PHOTOS, OFFERS} from "../const.js";
+import {DESTINATION_PHOTOS, DESTINATIONS, OFFERS_MAP} from "../const.js";
 
 import "flatpickr/dist/flatpickr.min.css";
 
@@ -16,8 +16,8 @@ const createOfferMarkup = (offer) => {
   const isOfferChecked = () => offer.checked ? `checked` : ``;
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.name}" type="checkbox" name="event-offer" value="${offer.name}" ${isOfferChecked()}>
-      <label class="event__offer-label" for="event-offer">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.name}" type="checkbox" name="event-offer-${offer.name}" value="${offer.name}" ${isOfferChecked()}>
+      <label class="event__offer-label" for="event-offer-${offer.name}">
       <span class="event__offer-title">${offer.description}</span>
       &plus;
      &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
@@ -64,11 +64,17 @@ const createNotNewItemElementMarkup = (isFavorite) => {
   );
 };
 
+const createDataListMarkup = (destination) => {
+  return (
+    `<option value="${destination}"></option>`
+  );
+};
+
 const createTripEditTemplate = ({id, eventType, destination, price, startEventTime, endEventTime, offers, isFavorite}) => {
   const notNewItemElementMarkup = id !== 0 ? createNotNewItemElementMarkup(isFavorite) : ` `;
   const offersMarkup = offers.map((offer) => createOfferMarkup(offer)).join(`\n`);
   const descriptionMarup = destination === `` ? ` ` : createDestinationMarkup(destination);
-
+  const dataListMarkup = DESTINATIONS.map((destinationForData) => createDataListMarkup(destinationForData)).join(`\n`);
   return (
     `<li class="trip-events__item">
     <form class="trip-events__item event  event--edit" action="#" method="post">
@@ -145,13 +151,9 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
             <label class="event__label  event__type-output" for="event-destination-1">
               ${capitalize(eventType)} to
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination === `` ? ` ` : destination}" list="destination-list-1">
             <datalist id="destination-list-1">
-              <option value="Barcelona"></option>
-              <option value="Paris"></option>
-              <option value="Amsterdam"></option>
-              <option value="Portu"></option>
-              <option value="Lisboa"></option>
+              ${dataListMarkup}
              </datalist>
           </div>
 
@@ -172,7 +174,7 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
                 <span class="visually-hidden">Price</span>
                 &euro;
               </label>
-              <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+              <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
             </div>
 
             <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -198,19 +200,22 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
 };
 
 const parseFormData = (formData) => {
-  console.log(formData.getAll(`event-offer`));
-  const offers = OFFERS.slice().map((offer) => {
-    offer.checked = false;
-    return offer;
-  })
   return {
     eventType: formData.get(`event-type`),
     destination: formData.get(`event-destination`),
     price: formData.get(`event-price`),
     startEventTime: new Date(getCurrentDateFromValue(formData.get(`event-start-time`))),
     endEventTime: new Date(getCurrentDateFromValue(formData.get(`event-end-time`))),
-    offers,
   };
+};
+
+const checkDestinationValue = (value, component) => {
+  if (DESTINATIONS.indexOf(value) !== -1) {
+    component.setCustomValidity(``);
+    return true;
+  }
+  component.setCustomValidity(`Select destination from data-list`);
+  return false;
 };
 
 
@@ -250,8 +255,31 @@ export default class TripEditComponent extends AbstractSmartComponent {
   getData() {
     const form = this.getElement().querySelector(`.event--edit`);
     const formData = new FormData(form);
+    const offers = [];
+    this.getElement().querySelectorAll(`.event__offer-checkbox`).forEach((checbox) => {
+      const offerName = checbox.value;
+      offers.push({
+        name: offerName,
+        price: OFFERS_MAP[offerName].price,
+        description: OFFERS_MAP[offerName].description,
+        checked: checbox.checked
+      });
+    });
+    const data = parseFormData(formData);
+    data.offers = offers;
 
-    return parseFormData(formData);
+    return data;
+  }
+
+  setCheckValueHandler() {
+
+    const component = this.getElement();
+    const destination = component.querySelector(`#event-destination-1`);
+
+    component.addEventListener(`click`, () => {
+      checkDestinationValue(destination.value, destination);
+    }
+    );
   }
 
   setSubmitHandler(cb) {
@@ -268,7 +296,6 @@ export default class TripEditComponent extends AbstractSmartComponent {
 
   setOnChangeTransferHandler() {
     this.getElement().addEventListener(`change`, (evt) => {
-      console.log(evt);
       switch (evt.target.name) {
         case `event-type`:
           if (evt.target.value === `on`) {
@@ -278,12 +305,13 @@ export default class TripEditComponent extends AbstractSmartComponent {
           this.rerender();
           break;
         case `event-destination`:
-          this._item.destination = evt.target.value;
-          this.rerender();
+          if (checkDestinationValue(evt.target.value, evt.target)) {
+            this._item.destination = evt.target.value;
+            this.rerender();
+          }
+
           break;
         case `event-start-time`:
-          console.log(evt.target.value);
-          console.log(getCurrentDateFromValue(evt.target.value));
           break;
         case `event-price`:
           this._item.price = evt.target.value;
