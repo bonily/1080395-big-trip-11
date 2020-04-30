@@ -1,5 +1,5 @@
 /**
- * @param {number} value - this is used for...
+ * @param {number} value
  * @return {string}
  */
 const getCurrentDateValue = (value) => {
@@ -39,4 +39,9 @@ const render = (container, element, place, specialPlace) => {
   }
 };
 
-export {getCurrentDateValue, getSimpleDate, createElement, RenderPosition, render};
+const remove = (component) => {
+  component.getElement().remove();
+  component.removeElement();
+};
+
+export {getCurrentDateValue, getSimpleDate, createElement, RenderPosition, render, remove};

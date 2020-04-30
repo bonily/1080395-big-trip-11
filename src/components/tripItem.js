@@ -1,4 +1,4 @@
-import {capitalize} from "../utils/common.js";
+import {capitalize, getDateTime} from "../utils/common.js";
 import AbstractComponent from "./abstractComponent.js";
 import moment from "moment";
 import "moment-duration-format";
@@ -14,13 +14,6 @@ const getEventDuration = (start, end) => {
   return moment.duration(duretionMs, `milliseconds`).format(`DD[D] hh[H] mm[M]`);
 };
 
-/**
- * @param {Date} date
- * @return {string} - возвращает строковоу представление даты для атрибута datetime формата год-месяц-числоTчасы:минуты;
- */
-const getDateTime = (date) => {
-  return moment(date).format(`YYYY-MM-DDThh:mm`);
-};
 
 const getShortTime = (date) => {
   return moment(date).format(`hh:mm`);
@@ -64,7 +57,7 @@ const createOfferMarkup = (offers) => {
  */
 const createTripItemTemplate = ({eventType, destination, price, startEventTime, endEventTime, offers}) => {
   const eventDuration = getEventDuration(startEventTime, endEventTime);
-  const offerMarkup = createOfferMarkup(offers);
+  const offerMarkup = createOfferMarkup(offers.filter((offer) => offer.checked === true));
 
 
   return (

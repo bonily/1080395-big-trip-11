@@ -1,17 +1,36 @@
 import TripEditComponent from "../components/tripEdit.js";
 import TripItemComponent from "../components/tripItem.js";
-import {render, RenderPosition, replace} from "../utils/render.js";
+import {render, RenderPosition, replace, remove} from "../utils/render.js";
+import {OFFERS} from "../const.js";
+
 
 const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
+  NEW: `new`
+};
+
+export const EmptyTask = {
+  id: 0,
+  eventType: `flight`,
+  destination: ``,
+  price: 0,
+  startEventTime: new Date(),
+  endEventTime: new Date(),
+  offers: OFFERS.map((offer) => {
+    offer.checked = false;
+    return offer;
+  })
 };
 
 export default class ItemController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, onDeleteItem, onNewItem) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
+    this._onDeleteItem = onDeleteItem;
+    this._onNewItem = onNewItem;
+    this.isItemControllerActive = false;
 
     this._itemComponent = null;
     this._itemEditComponent = null;
@@ -20,7 +39,7 @@ export default class ItemController {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
-  render(item) {
+  render(item, mode) {
 
     // const oldItemComponent = this._itemComponent;
     const oldItemEditComponent = this._itemEditComponent;
@@ -29,24 +48,42 @@ export default class ItemController {
     this._itemEditComponent = new TripEditComponent(item);
 
     this._itemEditComponent.setFavoriteButtonClickHandler(() => {
-      this._onDataChange(item, Object.assign({}, item, {
+      this._onDataChange(this, item, Object.assign({}, item, {
         isFavorite: !item.isFavorite,
       }));
     });
 
     this._itemComponent.setEditButtonHadler((evt) => {
       evt.preventDefault();
+      this.isItemControllerActive = true;
       this._replaceItemToEdit();
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    this._itemEditComponent.setSubmitHandler((evt) => {
-      evt.preventDefault();
+    this._itemEditComponent.setSubmitHandler(() => {
+      const data = this._itemEditComponent.getData();
+      if (mode === Mode.NEW) {
+        this._onNewItem(data);
+        return;
+      }
+      this.isItemControllerActive = false;
+      this._onDataChange(this, item, data);
       this._replaceEditToItem();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     });
 
     this._itemEditComponent.setOnChangeTransferHandler();
+    this._itemEditComponent.setCheckValueHandler();
+
+    this._itemEditComponent.setDeleteHandler((evt) => {
+      this._onDeleteItem(item.id);
+      evt.preventDefault();
+    });
+
+    if (mode === `new`) {
+      this._mode = Mode.NEW;
+      render(this._container, this._itemEditComponent, RenderPosition.AFTERBEGIN);
+    }
 
 
     if (oldItemEditComponent) {
@@ -55,6 +92,12 @@ export default class ItemController {
     } else {
       render(this._container, this._itemComponent, RenderPosition.BEFOREEND);
     }
+  }
+
+  destroy() {
+    remove(this._itemEditComponent);
+    remove(this._itemComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _replaceItemToEdit() {
@@ -78,7 +121,9 @@ export default class ItemController {
   }
 
   setDefaultView() {
-    if (this._mode !== Mode.DEFAULT) {
+    if (this._mode === Mode.NEW) {
+      this.destroy();
+    } else if (this._mode === Mode.EDIT) {
       this._replaceEditToItem();
     }
   }
