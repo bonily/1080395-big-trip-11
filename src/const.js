@@ -1,5 +1,26 @@
+const getRandomIntegerNumber = (min, max) => {
+  return min + Math.floor(Math.random() * (max - min));
+};
+
 export const EVENT_TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check`, `sightseeing`, `restaurant`];
 export const DESTINATIONS = [`Barcelona`, `Paris`, `Amsterdam`, `Portu`, `Lisboa`];
+export const DESTINATION_PHOTOS = {
+  Barcelona: new Array(getRandomIntegerNumber(1, 8))
+              .fill(``)
+              .map(() => `http://picsum.photos/248/152?r=${Math.random()}`),
+  Paris: new Array(getRandomIntegerNumber(1, 8))
+              .fill(``)
+              .map(() => `http://picsum.photos/248/152?r=${Math.random()}`),
+  Amsterdam: new Array(getRandomIntegerNumber(1, 8))
+              .fill(``)
+              .map(() => `http://picsum.photos/248/152?r=${Math.random()}`),
+  Portu: new Array(getRandomIntegerNumber(1, 8))
+              .fill(``)
+              .map(() => `http://picsum.photos/248/152?r=${Math.random()}`),
+  Lisboa: new Array(getRandomIntegerNumber(1, 8))
+              .fill(``)
+              .map(() => `http://picsum.photos/248/152?r=${Math.random()}`),
+}
 
 export const OFFERS = [
   {name: `car`, price: 200, description: `Rent a car`},
@@ -30,8 +51,8 @@ export const SORT_FILTERS = [
   {name: `price`, isActive: false},
 ];
 
-export const MAIN_FILTERS = [
-  {name: `everything`, isActive: true},
-  {name: `future`, isActive: false},
-  {name: `past`, isActive: false},
-];
+export const MAIN_FILTERS = {
+  ALL: `everything`,
+  FUTURE: `future`,
+  PAST: `past`,
+};

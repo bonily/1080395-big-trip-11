@@ -10,7 +10,7 @@ const craeteMainFilterMarkup = (filter) => {
   );
 };
 
-export const createTripMainFilterTemlate = (filters) => {
+const createTripMainFilterTemlate = (filters) => {
   const mainFiltersMarkup = filters.map((filter) => craeteMainFilterMarkup(filter)).join(``);
   return (
     `<form class="trip-filters" action="#" method="get">
@@ -35,6 +35,13 @@ export default class TripMainFilterComponent {
       this._element = createElement(this.getTemplate());
     }
     return this._element;
+  }
+
+  setFilterTypeChangeHandler(cb) {
+    this.getElement().addEventListener(`change`, (evt) => {
+      evt.preventDefault();
+      cb(evt.target.value);
+    });
   }
 
   removeElement() {

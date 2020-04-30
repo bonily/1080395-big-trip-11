@@ -5,7 +5,6 @@ const descriptionText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit
 const descriptionSentences = descriptionText.split(`. `);
 
 
-
 const getRandomIntegerNumber = (min, max) => {
   return min + Math.floor(Math.random() * (max - min));
 };
@@ -43,6 +42,7 @@ const generateEventItem = () => {
   const targetDate = getRandomTimeFromCurrent(new Date());
   const aviableOffers = getRandomArray(OFFERS, 0);
   return {
+    id: Date.parse(new Date()) + Math.random(),
     eventType: getRandomArrayItem(EVENT_TYPES),
     destination: getRandomArrayItem(DESTINATIONS),
     price: getRandomIntegerNumber(0, 300),
@@ -50,9 +50,6 @@ const generateEventItem = () => {
     endEventTime: getRandomTimeFromCurrent(targetDate),
     offers: getRandomArray(aviableOffers, 0),
     aviableOffers,
-    photos: new Array(getRandomIntegerNumber(1, 8))
-      .fill(``)
-      .map(() => `http://picsum.photos/248/152?r=${Math.random()}`),
     isFavorite: Math.random() > 0.5
   };
 };

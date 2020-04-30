@@ -1,6 +1,14 @@
 import moment from "moment";
 
 /**
+ * @param {Date} date
+ * @return {string} - возвращает строковоу представление даты для атрибута datetime формата год-месяц-числоTчасы:минуты;
+ */
+const getDateTime = (date) => {
+  return moment(date).format(`YYYY-MM-DDThh:mm`);
+};
+
+/**
  * @param {number} value - добавляет 0 перед месяцем или числом, для отображения даты согласно разметки
  * @return {string}
  */
@@ -42,5 +50,6 @@ const capitalize = (type) => {
   return type.charAt(0).toUpperCase() + type.slice(1);
 };
 
+const getRandomId = () => Date.parse(new Date()) + Math.random();
 
-export {getCurrentDateValue, getSimpleDate, createElement, groupTripItems, capitalize};
+export {getCurrentDateValue, getSimpleDate, createElement, groupTripItems, capitalize, getRandomId, getDateTime};
