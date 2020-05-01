@@ -2,7 +2,7 @@ import {capitalize, getDateTime} from "../utils/common.js";
 import AbstractSmartComponent from "./abstractSmartComponent.js";
 import {Description} from "../mock/trip.js";
 import flatpickr from "flatpickr";
-import {DESTINATION_PHOTOS, DESTINATIONS, OFFERS_MAP} from "../const.js";
+import {DESTINATION_PHOTOS, DESTINATIONS, OFFERS_MAP, EVENT_TYPES} from "../const.js";
 
 import "flatpickr/dist/flatpickr.min.css";
 
@@ -70,11 +70,25 @@ const createDataListMarkup = (destination) => {
   );
 };
 
+const createEventTypesMatkup = (type, eventType) => {
+  const isTypeCheced = type === eventType ? `checked` : ``; 
+  return (
+    `<div class="event__type-item">
+    <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${isTypeCheced}>
+    <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalize(type)}</label>
+  </div>`
+  )
+
+}
+
 const createTripEditTemplate = ({id, eventType, destination, price, startEventTime, endEventTime, offers, isFavorite}) => {
   const notNewItemElementMarkup = id !== 0 ? createNotNewItemElementMarkup(isFavorite) : ` `;
   const offersMarkup = offers.map((offer) => createOfferMarkup(offer)).join(`\n`);
   const descriptionMarup = destination === `` ? ` ` : createDestinationMarkup(destination);
   const dataListMarkup = DESTINATIONS.map((destinationForData) => createDataListMarkup(destinationForData)).join(`\n`);
+  const eventTransferTypesMarkup = EVENT_TYPES.slice(0, 7).map((type) => createEventTypesMatkup(type, eventType)).join(`\n`);
+  const eventActivityTypesMarkup = EVENT_TYPES.slice(-3).map((type) => createEventTypesMatkup(type, eventType)).join(`\n`);
+
   return (
     `<li class="trip-events__item">
     <form class="trip-events__item event  event--edit" action="#" method="post">
@@ -90,59 +104,13 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
 
-                <div class="event__type-item">
-                  <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                  <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                  <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                  <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                  <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                  <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                  <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                  <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-                </div>
+                ${eventTransferTypesMarkup}
               </fieldset>
 
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Activity</legend>
 
-                <div class="event__type-item">
-                  <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check">
-                  <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                  <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-                </div>
-
-                <div class="event__type-item">
-                   <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                   <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-                </div>
+                ${eventActivityTypesMarkup}
               </fieldset>
             </div>
           </div>
@@ -200,8 +168,9 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
 };
 
 const parseFormData = (formData) => {
+  console.log(formData.getAll(`event-type`))
   return {
-    eventType: formData.get(`event-type`),
+    eventType: formData.getAll(`event-type`)[0],
     destination: formData.get(`event-destination`),
     price: formData.get(`event-price`),
     startEventTime: new Date(getCurrentDateFromValue(formData.get(`event-start-time`))),

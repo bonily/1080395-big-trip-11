@@ -1,8 +1,29 @@
+import API from "./api.js";
+
+const AUTHORIZATION = `Basic dXNlckBwYXfghjSIUYBVCDSzd29yZAo=`;
+const api = new API(AUTHORIZATION);
+
 const getRandomIntegerNumber = (min, max) => {
   return min + Math.floor(Math.random() * (max - min));
 };
 
-export const EVENT_TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check`, `sightseeing`, `restaurant`];
+export let EVENT_TYPES = [];
+export let OFFERS_MAP = {};
+
+export const createEventTypesMap = (data) => {
+  EVENT_TYPES = data.map((item) => item.type);
+  OFFERS_MAP = data.reduce((acc, item) => {
+      if (acc[item.type] === undefined) {
+        acc[item.type] = [];
+      }
+      acc[item.type] = item.offers;
+      return acc;
+    }, {});
+
+
+  console.log(OFFERS_MAP);
+}
+
 export const DESTINATIONS = [`Barcelona`, `Paris`, `Amsterdam`, `Portu`, `Lisboa`];
 export const DESTINATION_PHOTOS = {
   Barcelona: new Array(getRandomIntegerNumber(1, 8))
@@ -30,7 +51,7 @@ export const OFFERS = [
   {name: `seat`, price: 5, description: `Choose seats`, checked: false},
   {name: `train`, price: 40, description: `Travel by train`, checked: true}];
 
-export const OFFERS_MAP = {
+export const OFFERS_MAPK = {
   car: {
     price: 200,
     description: `Rent a car`,
