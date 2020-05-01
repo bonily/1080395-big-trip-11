@@ -1,47 +1,40 @@
-import API from "./api.js";
+// import API from "./api.js";
 
-const AUTHORIZATION = `Basic dXNlckBwYXfghjSIUYBVCDSzd29yZAo=`;
-const api = new API(AUTHORIZATION);
+// const AUTHORIZATION = `Basic dXNlckBwYXfghjSIUYBVCDSzd29yZAo=`;
+// const api = new API(AUTHORIZATION);
 
-const getRandomIntegerNumber = (min, max) => {
-  return min + Math.floor(Math.random() * (max - min));
-};
+// const getRandomIntegerNumber = (min, max) => {
+//   return min + Math.floor(Math.random() * (max - min));
+// };
 
-export let EVENT_TYPES = [];
+export const EVENT_TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check`, `sightseeing`, `restaurant`];
 export let OFFERS_MAP = {};
 
 export const createEventTypesMap = (data) => {
-  EVENT_TYPES = data.map((item) => item.type);
+  // EVENT_TYPES = data.map((item) => item.type);
   OFFERS_MAP = data.reduce((acc, item) => {
-      if (acc[item.type] === undefined) {
-        acc[item.type] = [];
-      }
-      acc[item.type] = item.offers;
-      return acc;
-    }, {});
-
-
-  console.log(OFFERS_MAP);
-}
+    if (acc[item.type] === undefined) {
+      acc[item.type] = [];
+    }
+    acc[item.type] = item.offers;
+    return acc;
+  }, {});
+};
 
 export const DESTINATIONS = [`Barcelona`, `Paris`, `Amsterdam`, `Portu`, `Lisboa`];
-export const DESTINATION_PHOTOS = {
-  Barcelona: new Array(getRandomIntegerNumber(1, 8))
-              .fill(``)
-              .map(() => `http://picsum.photos/248/152?r=${Math.random()}`),
-  Paris: new Array(getRandomIntegerNumber(1, 8))
-              .fill(``)
-              .map(() => `http://picsum.photos/248/152?r=${Math.random()}`),
-  Amsterdam: new Array(getRandomIntegerNumber(1, 8))
-              .fill(``)
-              .map(() => `http://picsum.photos/248/152?r=${Math.random()}`),
-  Portu: new Array(getRandomIntegerNumber(1, 8))
-              .fill(``)
-              .map(() => `http://picsum.photos/248/152?r=${Math.random()}`),
-  Lisboa: new Array(getRandomIntegerNumber(1, 8))
-              .fill(``)
-              .map(() => `http://picsum.photos/248/152?r=${Math.random()}`),
+export let DESTINATION_MAP = [];
+
+export const createEventDestinationsMap = (data) => {
+  data.forEach((item) => DESTINATIONS.push(item.name));
+  DESTINATION_MAP = data.reduce((acc, item) => {
+    if (acc[item.name] === undefined) {
+      acc[item.name] = [];
+    }
+    acc[item.name] = item;
+    return acc;
+  }, {});
 };
+
 
 export const OFFERS = [
   {name: `car`, price: 200, description: `Rent a car`, checked: true},

@@ -1,13 +1,13 @@
 import API from "./api.js";
 import TripController from "./controllers/tripController.js";
 import MainFiltersController from "./controllers/filterController.js";
-import {generateEventItems} from "./mock/trip.js";
+
 import {render, RenderPosition} from "./utils/render.js";
-import TripMainComponent from "./components/tripMainInfo.js";
+
 import TripMainControlComponent from "./components/tripMainControls.js";
 import BoardTemplate from "./components/board.js";
 import ItemsModel from "./models/items.js";
-import {createEventTypesMap} from "./const.js";
+import {createEventTypesMap, createEventDestinationsMap} from "./const.js";
 
 
 // const TASK_COUNT = 20;
@@ -41,10 +41,19 @@ newItemButton.addEventListener(`click`, () => {
 api.getItems()
 .then((items) => {
   itemsModel.setItems(items);
-  tripController.render();
-});
-
-api.getOffers()
-.then((offers) => {
-  createEventTypesMap(offers);
+  api.getOffers()
+    .then((offers) => {
+      createEventTypesMap(offers);
+      api.getDestinations()
+        .then((result) => {
+          createEventDestinationsMap(result);
+          (tripController.render());
 })
+
+
+    });
+  })
+
+
+
+

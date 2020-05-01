@@ -1,8 +1,7 @@
 import {capitalize, getDateTime} from "../utils/common.js";
 import AbstractSmartComponent from "./abstractSmartComponent.js";
-import {Description} from "../mock/trip.js";
 import flatpickr from "flatpickr";
-import {DESTINATION_PHOTOS, DESTINATIONS, OFFERS_MAP, EVENT_TYPES} from "../const.js";
+import {DESTINATIONS, OFFERS_MAP, EVENT_TYPES, DESTINATION_MAP} from "../const.js";
 
 import "flatpickr/dist/flatpickr.min.css";
 
@@ -12,13 +11,14 @@ const getCurrentDateFromValue = (value) => {
   return dateString;
 };
 
-const createOfferMarkup = (offer) => {
-  const isOfferChecked = () => offer.checked ? `checked` : ``;
+const createOfferMarkup = (offer, currentOffers) => {
+
+  const isOfferChecked = () => currentOffers.some((currentOffer) => currentOffer.title === offer.title) ? `checked` : ``;
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.name}" type="checkbox" name="event-offer-${offer.name}" value="${offer.name}" ${isOfferChecked()}>
-      <label class="event__offer-label" for="event-offer-${offer.name}">
-      <span class="event__offer-title">${offer.description}</span>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}" type="checkbox" name="event-offer-${offer.title}" value="${offer.title}" ${isOfferChecked()}>
+      <label class="event__offer-label" for="event-offer-${offer.title}">
+      <span class="event__offer-title">${offer.title}</span>
       &plus;
      &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
       </label>
@@ -28,13 +28,13 @@ const createOfferMarkup = (offer) => {
 
 const createPhotosMarkup = (photo) => {
   return (
-    `<img class="event__photo" src="${photo}" alt="Event photo">`
+    `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
   );
 };
 
 const createDestinationMarkup = (destination) => {
-  const photosMarkup = DESTINATION_PHOTOS[destination].map((photo) => createPhotosMarkup(photo)).join(`\n`);
-  const description = Description[destination];
+  const photosMarkup = destination.pictures.map((photo) => createPhotosMarkup(photo)).join(`\n`);
+  const description = destination.description;
   return (
     `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -71,19 +71,20 @@ const createDataListMarkup = (destination) => {
 };
 
 const createEventTypesMatkup = (type, eventType) => {
-  const isTypeCheced = type === eventType ? `checked` : ``; 
+  const isTypeCheced = type === eventType ? `checked` : ``;
   return (
     `<div class="event__type-item">
     <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${isTypeCheced}>
     <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalize(type)}</label>
   </div>`
-  )
+  );
+};
 
-}
-
-const createTripEditTemplate = ({id, eventType, destination, price, startEventTime, endEventTime, offers, isFavorite}) => {
+const createTripEditTemplate = ({id, eventType, destinationName, price, startEventTime, endEventTime, offers, isFavorite}) => {
   const notNewItemElementMarkup = id !== 0 ? createNotNewItemElementMarkup(isFavorite) : ` `;
-  const offersMarkup = offers.map((offer) => createOfferMarkup(offer)).join(`\n`);
+  const destination = DESTINATION_MAP[destinationName];
+  const avaiblableOffers = OFFERS_MAP[eventType];
+  const offersMarkup = avaiblableOffers.map((offer) => createOfferMarkup(offer, offers)).join(`\n`);
   const descriptionMarup = destination === `` ? ` ` : createDestinationMarkup(destination);
   const dataListMarkup = DESTINATIONS.map((destinationForData) => createDataListMarkup(destinationForData)).join(`\n`);
   const eventTransferTypesMarkup = EVENT_TYPES.slice(0, 7).map((type) => createEventTypesMatkup(type, eventType)).join(`\n`);
@@ -119,7 +120,7 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
             <label class="event__label  event__type-output" for="event-destination-1">
               ${capitalize(eventType)} to
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination === `` ? ` ` : destination}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName === `` ? ` ` : destinationName}" list="destination-list-1">
             <datalist id="destination-list-1">
               ${dataListMarkup}
              </datalist>
@@ -168,7 +169,6 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
 };
 
 const parseFormData = (formData) => {
-  console.log(formData.getAll(`event-type`))
   return {
     eventType: formData.getAll(`event-type`)[0],
     destination: formData.get(`event-destination`),
@@ -275,7 +275,7 @@ export default class TripEditComponent extends AbstractSmartComponent {
           break;
         case `event-destination`:
           if (checkDestinationValue(evt.target.value, evt.target)) {
-            this._item.destination = evt.target.value;
+            this._item.destinationName = evt.target.value;
             this.rerender();
           }
 

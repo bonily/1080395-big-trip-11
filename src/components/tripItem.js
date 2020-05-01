@@ -1,6 +1,7 @@
 import {capitalize, getDateTime} from "../utils/common.js";
 import AbstractComponent from "./abstractComponent.js";
 import moment from "moment";
+import {DESTINATION_MAP} from "../const.js";
 import "moment-duration-format";
 
 
@@ -32,8 +33,8 @@ const createOfferMarkup = (offers) => {
   return offers
     .map((offer) => {
       return (
-        `<li class="event__offer event__offer--${offer.name}">
-          <span class="event__offer-title">${offer.description}</span>
+        `<li class="event__offer event__offer--${offer.title}">
+          <span class="event__offer-title">${offer.title}</span>
           &plus;
            &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
         </li>`);
@@ -55,9 +56,10 @@ const createOfferMarkup = (offers) => {
  * @param {TripItem} item
  * @return {string} - возвращает разметку для точки маршрта
  */
-const createTripItemTemplate = ({eventType, destination, price, startEventTime, endEventTime, offers}) => {
+const createTripItemTemplate = ({eventType, destinationName, price, startEventTime, endEventTime, offers}) => {
+  const destination = DESTINATION_MAP[destinationName];
   const eventDuration = getEventDuration(startEventTime, endEventTime);
-  const offerMarkup = createOfferMarkup(offers.filter((offer) => offer.checked === true));
+  const offerMarkup = createOfferMarkup(offers);
 
 
   return (
@@ -66,7 +68,7 @@ const createTripItemTemplate = ({eventType, destination, price, startEventTime, 
           <div class="event__type">
             <img class="event__type-icon" width="42" height="42" src="img/icons/${eventType}.png" alt="Event type icon">
           </div>
-          <h3 class="event__title">${capitalize(eventType)} to ${destination}</h3>
+          <h3 class="event__title">${capitalize(eventType)} to ${destination.name}</h3>
           <div class="event__schedule">
             <p class="event__time">
               <time class="event__start-time" datetime="${getDateTime(startEventTime)}">${getShortTime(startEventTime)}</time>
