@@ -16,6 +16,7 @@ const createTripMainControlTemplate = () => {
 export default class TripMainControlComponent {
   constructor() {
     this._element = null;
+    this._currentActiveElement = null;
   }
 
   getTemplate() {
@@ -32,5 +33,20 @@ export default class TripMainControlComponent {
 
   removeElement() {
     this._element = null;
+  }
+
+  setOnChange(cb) {
+    this._currentActiveElement = this.getElement().querySelector(`.trip-tabs__btn--active`);
+    console.log(this._currentActiveElement);
+
+
+    this.getElement().addEventListener(`click`, (evt) => {
+      this._currentActiveElement.classList.remove(`trip-tabs__btn--active`);
+      this._currentActiveElement = evt.target;
+      this._currentActiveElement.classList.add(`trip-tabs__btn--active`)
+      cb(evt.target.text);
+      console.log(evt.target.text)
+
+    })
   }
 }

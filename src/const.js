@@ -1,39 +1,6 @@
-// import API from "./api.js";
+export const EVENT_TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
 
-// const AUTHORIZATION = `Basic dXNlckBwYXfghjSIUYBVCDSzd29yZAo=`;
-// const api = new API(AUTHORIZATION);
-
-// const getRandomIntegerNumber = (min, max) => {
-//   return min + Math.floor(Math.random() * (max - min));
-// };
-
-export const EVENT_TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check`, `sightseeing`, `restaurant`];
-export let OFFERS_MAP = {};
-
-export const createEventTypesMap = (data) => {
-  // EVENT_TYPES = data.map((item) => item.type);
-  OFFERS_MAP = data.reduce((acc, item) => {
-    if (acc[item.type] === undefined) {
-      acc[item.type] = [];
-    }
-    acc[item.type] = item.offers;
-    return acc;
-  }, {});
-};
-
-export const DESTINATIONS = [`Barcelona`, `Paris`, `Amsterdam`, `Portu`, `Lisboa`];
-export let DESTINATION_MAP = [];
-
-export const createEventDestinationsMap = (data) => {
-  data.forEach((item) => DESTINATIONS.push(item.name));
-  DESTINATION_MAP = data.reduce((acc, item) => {
-    if (acc[item.name] === undefined) {
-      acc[item.name] = [];
-    }
-    acc[item.name] = item;
-    return acc;
-  }, {});
-};
+export const EVENT_TYPES_ACTIVITY = [`check-in`, `sightseeing`, `restaurant`];
 
 
 export const OFFERS = [

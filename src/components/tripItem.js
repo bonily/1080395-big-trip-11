@@ -1,19 +1,7 @@
-import {capitalize, getDateTime} from "../utils/common.js";
+import {capitalize, getDateTime, getEventDuration} from "../utils/common.js";
 import AbstractComponent from "./abstractComponent.js";
 import moment from "moment";
-import {DESTINATION_MAP} from "../const.js";
 import "moment-duration-format";
-
-
-/**
- * @param {Date} start - дата начала путешествия
- * @param {Date} end - дата конца путешествия
- * @return {string} - возвращает текствовое представление продолжительности путешествия;
- */
-const getEventDuration = (start, end) => {
-  const duretionMs = end.getTime() - start.getTime();
-  return moment.duration(duretionMs, `milliseconds`).format(`DD[D] hh[H] mm[M]`);
-};
 
 
 const getShortTime = (date) => {
@@ -31,6 +19,7 @@ const getShortTime = (date) => {
  */
 const createOfferMarkup = (offers) => {
   return offers
+    .slice(0, 3)
     .map((offer) => {
       return (
         `<li class="event__offer event__offer--${offer.title}">
@@ -56,8 +45,8 @@ const createOfferMarkup = (offers) => {
  * @param {TripItem} item
  * @return {string} - возвращает разметку для точки маршрта
  */
-const createTripItemTemplate = ({eventType, destinationName, price, startEventTime, endEventTime, offers}) => {
-  const destination = DESTINATION_MAP[destinationName];
+const createTripItemTemplate = ({eventType, destination, price, startEventTime, endEventTime, offers}) => {
+  //const destination = DESTINATION_MAP[destinationName];
   const eventDuration = getEventDuration(startEventTime, endEventTime);
   const offerMarkup = createOfferMarkup(offers);
 

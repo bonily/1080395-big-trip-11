@@ -1,4 +1,6 @@
 import AbstractCompinent from "./abstractComponent.js";
+import AbstractSmartComponent from "./abstractSmartComponent.js";
+
 import {capitalize} from "../utils/common.js";
 
 
@@ -25,11 +27,13 @@ const createListSortTemplate = (filters) => {
   );
 };
 
-export default class SortListComponent extends AbstractCompinent {
+export default class SortListComponent extends AbstractSmartComponent {
   constructor(filters) {
     super();
 
     this._filters = filters;
+    this._activeFilter = `sort-event`;
+    this._typeChangeCb = null;
   }
 
   getTemplate() {
@@ -40,13 +44,21 @@ export default class SortListComponent extends AbstractCompinent {
     this.getElement().addEventListener(`change`, (evt) => {
       evt.preventDefault();
 
+      this._activeFilter = evt.target.value;
       const sortType = evt.target.value.split(`-`)[1];
+      
       const daySortComponent = this.getElement().querySelector(`.trip-sort__item--day`);
 
       daySortComponent.innerHTML = sortType !== `event` ? `` : `Day`;
+      this._typeChangeCb = cb;
 
       cb(sortType);
 
     });
   }
+
+  recoveryListeners() {
+
+  }
 }
+

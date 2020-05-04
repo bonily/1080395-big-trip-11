@@ -1,5 +1,23 @@
 import moment from "moment";
 
+
+const KeyMap = {
+  start: `startEventTime`,
+  type: `eventType`,
+};
+
+
+/**
+ * @param {Date} start - дата начала путешествия
+ * @param {Date} end - дата конца путешествия
+ * @return {string} - возвращает текствовое представление продолжительности путешествия;
+ */
+const getEventDuration = (start, end) => {
+  const duretionMs = end.getTime() - start.getTime();
+  return moment.duration(duretionMs, `milliseconds`).format(`DD[D] hh[H] mm[M]`);
+};
+
+
 /**
  * @param {Date} date
  * @return {string} - возвращает строковоу представление даты для атрибута datetime формата год-месяц-числоTчасы:минуты;
@@ -32,17 +50,32 @@ const createElement = (template) => {
 
 /**
  * @param {array} items - получает массив объектов (точки маршрута) из Main, преобразует в объект формата ключ (день путешествия, дата) : значение (массив точек маршрута для этого дня)
- * @return {array} - возвращает массив объектов (ключ(дата): значения (массив точек маршрута), отсортированный по датам)
+ * @param {String} key - ключ, по которому будет происходить группировка
+ * @return {array} - возвращает массив объектов (ключ: значения (массив точек маршрута), отсортированный по датам)
  */
-const groupTripItems = (items) => {
-  const transformItems = items.reduce((acc, item) => {
-    if (acc[getSimpleDate(item.startEventTime)] === undefined) {
-      acc[getSimpleDate(item.startEventTime)] = [];
+const groupTripItemsByKey = (items, key) => {
+  //let transformItemGroup = null;
+
+  if (key === KeyMap.start) {
+    const transformItemGroup = items.reduce((acc, item) => {
+      if (acc[getSimpleDate(item[key])] === undefined) {
+        acc[getSimpleDate(item[key])] = [];
+      }
+      acc[getSimpleDate(item[key])].push(item);
+      return acc;
+    }, {});
+    return Object.entries(transformItemGroup).sort();
+  }
+
+
+  return items.reduce((acc, item) => {
+    if (acc[item[key]] === undefined) {
+      acc[item[key]] = [];
     }
-    acc[getSimpleDate(item.startEventTime)].push(item);
+    acc[item[key]].push(item);
     return acc;
   }, {});
-  return Object.entries(transformItems).sort();
+
 };
 
 const capitalize = (type) => {
@@ -52,4 +85,24 @@ const capitalize = (type) => {
 
 const getRandomId = () => Date.parse(new Date()) + Math.random();
 
-export {getCurrentDateValue, getSimpleDate, createElement, groupTripItems, capitalize, getRandomId, getDateTime};
+const createOffersMap = (data) => {
+  return data.reduce((acc, item) => {
+    if (acc[item.type] === undefined) {
+      acc[item.type] = [];
+    }
+    acc[item.type] = item.offers;
+    return acc;
+  }, {});
+};
+
+const createDestinationsMap = (data) => {
+  return data.reduce((acc, item) => {
+    if (acc[item.name] === undefined) {
+      acc[item.name] = [];
+    }
+    acc[item.name] = item;
+    return acc;
+  }, {});
+};
+
+export {getCurrentDateValue, getSimpleDate, createElement, groupTripItemsByKey, capitalize, getRandomId, getDateTime, createOffersMap, createDestinationsMap, getEventDuration};

@@ -9,7 +9,6 @@ export default class EventType {
   }
 
   static parseTypes(data) {
-    console.log(data);
     return data.map(Event.parseType);
   }
 }
