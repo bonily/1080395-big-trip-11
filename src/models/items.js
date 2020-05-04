@@ -1,9 +1,12 @@
 import {MAIN_FILTERS} from "../const.js";
 import {getItemsByFilter} from "../utils/filter.js";
+import {createOffersMap, createDestinationsMap} from "../utils/common.js";
 
 export default class ItemsModel {
   constructor() {
     this._items = [];
+    this._offersMap = {};
+    this._destinationsMap = {};
     this._activeFilter = MAIN_FILTERS.ALL;
 
     this._onDataChangeHandlers = [];
@@ -23,6 +26,22 @@ export default class ItemsModel {
   setItems(items) {
     this._items = Array.from(items);
     this._callHandlers(this._onDataChangeHandlers);
+  }
+
+  getOfferMap() {
+    return this._offersMap;
+  }
+
+  setOffers(offers) {
+    this._offersMap = createOffersMap(offers);
+  }
+
+  getDestinationMap() {
+    return this._destinationsMap;
+  }
+
+  setDestinations(destinations) {
+    this._destinationsMap = createDestinationsMap(destinations);
   }
 
   updateItem(id, item) {
@@ -63,15 +82,15 @@ export default class ItemsModel {
     this._callHandlers(this._filterChangeHandlers);
   }
 
-  setDataChangeHandler(handler) {
-    this._onDataChangeHandlers.push(handler);
+  setDataChangeHandler(cb) {
+    this._onDataChangeHandlers.push(cb);
   }
 
-  setFilterChangeHandler(handler) {
-    this._filterChangeHandlers.push(handler);
+  setFilterChangeHandler(cb) {
+    this._filterChangeHandlers.push(cb);
   }
 
-  _callHandlers(handlers) {
-    handlers.forEach((handler) => handler());
+  _callHandlers(callbacks) {
+    callbacks.forEach((cb) => cb());
   }
 }

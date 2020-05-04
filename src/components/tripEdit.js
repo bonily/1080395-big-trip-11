@@ -1,24 +1,24 @@
 import {capitalize, getDateTime} from "../utils/common.js";
 import AbstractSmartComponent from "./abstractSmartComponent.js";
-import {Description} from "../mock/trip.js";
 import flatpickr from "flatpickr";
-import {DESTINATION_PHOTOS, DESTINATIONS, OFFERS_MAP} from "../const.js";
+import {EVENT_TYPES} from "../const.js";
 
 import "flatpickr/dist/flatpickr.min.css";
 
-const getCurrentDateFromValue = (value) => {
-  const dateValue = value.split(/[.,\/ - :]/);
-  const dateString = `20` + dateValue[2] + `-` + dateValue[1] + `-` + dateValue[0] + `T` + dateValue[3] + `:` + dateValue[4];
-  return dateString;
+const DefaultData = {
+  deleteButtonText: `Delete`,
+  saveButtonText: `Save`,
+  isButtonAble: true,
 };
 
-const createOfferMarkup = (offer) => {
-  const isOfferChecked = () => offer.checked ? `checked` : ``;
+const createOfferMarkup = (offer, currentOffers) => {
+
+  const isOfferChecked = () => currentOffers.some((currentOffer) => currentOffer.title === offer.title) ? `checked` : ``;
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.name}" type="checkbox" name="event-offer-${offer.name}" value="${offer.name}" ${isOfferChecked()}>
-      <label class="event__offer-label" for="event-offer-${offer.name}">
-      <span class="event__offer-title">${offer.description}</span>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}" type="checkbox" name="event-offer" value="${offer.title}" ${isOfferChecked()}>
+      <label class="event__offer-label" for="event-offer-${offer.title}">
+      <span class="event__offer-title">${offer.title}</span>
       &plus;
      &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
       </label>
@@ -28,13 +28,13 @@ const createOfferMarkup = (offer) => {
 
 const createPhotosMarkup = (photo) => {
   return (
-    `<img class="event__photo" src="${photo}" alt="Event photo">`
+    `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
   );
 };
 
 const createDestinationMarkup = (destination) => {
-  const photosMarkup = DESTINATION_PHOTOS[destination].map((photo) => createPhotosMarkup(photo)).join(`\n`);
-  const description = Description[destination];
+  const photosMarkup = destination.pictures.map((photo) => createPhotosMarkup(photo)).join(`\n`);
+  const description = destination.description;
   return (
     `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -70,11 +70,26 @@ const createDataListMarkup = (destination) => {
   );
 };
 
-const createTripEditTemplate = ({id, eventType, destination, price, startEventTime, endEventTime, offers, isFavorite}) => {
-  const notNewItemElementMarkup = id !== 0 ? createNotNewItemElementMarkup(isFavorite) : ` `;
-  const offersMarkup = offers.map((offer) => createOfferMarkup(offer)).join(`\n`);
+const createEventTypesMatkup = (type, eventType) => {
+  const isTypeCheced = type === eventType ? `checked` : ``;
+  return (
+    `<div class="event__type-item">
+    <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${isTypeCheced}>
+    <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalize(type)}</label>
+  </div>`
+  );
+};
+
+
+const createTripEditTemplate = ({id, eventType, destination, price, startEventTime, endEventTime, offers, isFavorite}, OffersMap, DestinationMap, externalData) => {
+  const notNewItemElementMarkup = (id) ? createNotNewItemElementMarkup(isFavorite) : ` `;
+  const avaiblableOffers = OffersMap[eventType];
+  const offersMarkup = avaiblableOffers.map((offer) => createOfferMarkup(offer, offers)).join(`\n`);
   const descriptionMarup = destination === `` ? ` ` : createDestinationMarkup(destination);
-  const dataListMarkup = DESTINATIONS.map((destinationForData) => createDataListMarkup(destinationForData)).join(`\n`);
+  const dataListMarkup = Object.keys(DestinationMap).map((destinationForData) => createDataListMarkup(destinationForData)).join(`\n`);
+  const eventTransferTypesMarkup = EVENT_TYPES.slice(0, 7).map((type) => createEventTypesMatkup(type, eventType)).join(`\n`);
+  const eventActivityTypesMarkup = EVENT_TYPES.slice(-3).map((type) => createEventTypesMatkup(type, eventType)).join(`\n`);
+
   return (
     `<li class="trip-events__item">
     <form class="trip-events__item event  event--edit" action="#" method="post">
@@ -90,59 +105,13 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
 
-                <div class="event__type-item">
-                  <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                  <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                  <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                  <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                  <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                  <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                  <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                  <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-                </div>
+                ${eventTransferTypesMarkup}
               </fieldset>
 
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Activity</legend>
 
-                <div class="event__type-item">
-                  <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check">
-                  <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                  <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-                </div>
-
-                <div class="event__type-item">
-                   <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                   <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-                </div>
+                ${eventActivityTypesMarkup}
               </fieldset>
             </div>
           </div>
@@ -151,7 +120,7 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
             <label class="event__label  event__type-output" for="event-destination-1">
               ${capitalize(eventType)} to
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination === `` ? ` ` : destination}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination === `` ? `` : destination.name}" list="destination-list-1">
             <datalist id="destination-list-1">
               ${dataListMarkup}
              </datalist>
@@ -177,8 +146,8 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
               <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
             </div>
 
-            <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-            <button class="event__reset-btn" type="reset">Delete</button>
+            <button class="event__save-btn  btn  btn--blue" type="submit" ${externalData.isButtonAble ? `` : `disabled`}>${externalData.saveButtonText}</button>
+            <button class="event__reset-btn" type="reset" ${externalData.isButtonAble ? `` : `disabled`}>${id ? externalData.deleteButtonText : `Cancel`}</button>
 
           ${notNewItemElementMarkup}
 
@@ -199,18 +168,9 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
   );
 };
 
-const parseFormData = (formData) => {
-  return {
-    eventType: formData.get(`event-type`),
-    destination: formData.get(`event-destination`),
-    price: formData.get(`event-price`),
-    startEventTime: new Date(getCurrentDateFromValue(formData.get(`event-start-time`))),
-    endEventTime: new Date(getCurrentDateFromValue(formData.get(`event-end-time`))),
-  };
-};
-
-const checkDestinationValue = (value, component) => {
-  if (DESTINATIONS.indexOf(value) !== -1) {
+const checkDestinationValue = (value, component, DestinationMap) => {
+  console.log(Object.keys(DestinationMap));
+  if (Object.keys(DestinationMap).indexOf(value) !== -1) {
     component.setCustomValidity(``);
     return true;
   }
@@ -220,11 +180,15 @@ const checkDestinationValue = (value, component) => {
 
 
 export default class TripEditComponent extends AbstractSmartComponent {
-  constructor(item) {
+  constructor(item, OfferMap, DestinationMap) {
     super();
 
     this._item = item;
     this._submitCb = null;
+    this._deleteCb = null;
+    this.offerMap = OfferMap;
+    this.destinationMap = DestinationMap;
+    this._externalData = DefaultData;
 
     this._flatpickr = null;
     this._applyFlatpickr();
@@ -232,7 +196,7 @@ export default class TripEditComponent extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createTripEditTemplate(this._item);
+    return createTripEditTemplate(this._item, this.offerMap, this.destinationMap, this._externalData);
   }
 
   setFavoriteButtonClickHandler(cb) {
@@ -255,29 +219,17 @@ export default class TripEditComponent extends AbstractSmartComponent {
   getData() {
     const form = this.getElement().querySelector(`.event--edit`);
     const formData = new FormData(form);
-    const offers = [];
-    this.getElement().querySelectorAll(`.event__offer-checkbox`).forEach((checbox) => {
-      const offerName = checbox.value;
-      offers.push({
-        name: offerName,
-        price: OFFERS_MAP[offerName].price,
-        description: OFFERS_MAP[offerName].description,
-        checked: checbox.checked
-      });
-    });
-    const data = parseFormData(formData);
-    data.offers = offers;
 
-    return data;
+    return formData;
   }
 
   setCheckValueHandler() {
 
     const component = this.getElement();
-    const destination = component.querySelector(`#event-destination-1`);
+    const destinationComponent = component.querySelector(`#event-destination-1`);
 
     component.addEventListener(`click`, () => {
-      checkDestinationValue(destination.value, destination);
+      checkDestinationValue(destinationComponent.value, destinationComponent, this.destinationMap);
     }
     );
   }
@@ -292,6 +244,7 @@ export default class TripEditComponent extends AbstractSmartComponent {
     const deleteButton = this.getElement().querySelector(`.event__reset-btn`);
 
     deleteButton.addEventListener(`click`, cb);
+    this._deleteCb = cb;
   }
 
   setOnChangeTransferHandler() {
@@ -305,31 +258,12 @@ export default class TripEditComponent extends AbstractSmartComponent {
           this.rerender();
           break;
         case `event-destination`:
-          if (checkDestinationValue(evt.target.value, evt.target)) {
-            this._item.destination = evt.target.value;
+          if (checkDestinationValue(evt.target.value, evt.target, this.destinationMap)) {
+            this._item.destination = this.destinationMap[evt.target.value];
             this.rerender();
           }
-
-          break;
-        case `event-start-time`:
-          break;
-        case `event-price`:
-          this._item.price = evt.target.value;
-          this.rerender();
           break;
       }
-
-
-      // if (evt.target.name === `event-type`) {
-      //   if (evt.target.value === `on`) {
-      //     return;
-      //   }
-      //   this._item.eventType = evt.target.value;
-      //   this.rerender();
-      // } else if (evt.target.name === `event-destination`) {
-      //   this._item.destination = evt.target.value;
-      //   this.rerender();
-      // }
     });
   }
 
@@ -354,10 +288,28 @@ export default class TripEditComponent extends AbstractSmartComponent {
 
   recoveryListeners() {
     this.setSubmitHandler(this._submitCb);
+    this.setDeleteHandler(this._deleteCb);
     this.setOnChangeTransferHandler();
   }
 
   reset() {
     this.rerender();
+  }
+
+  setData(data, state) {
+    this._externalData = Object.assign({}, DefaultData, data);
+    this.rerender();
+    this._changeFormstate(state);
+  }
+
+  _changeFormstate(state) {
+    this.getElement().querySelectorAll(`.event__input, .event__offer-checkbox, .event__type`)
+    .forEach((elem) => {
+      if (state === `disable`) {
+        elem.setAttribute(`disabled`, `disabled`);
+      }
+      elem.removeAttribute(`disabled`);
+    });
+
   }
 }
