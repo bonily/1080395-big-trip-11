@@ -37,16 +37,11 @@ export default class TripMainControlComponent {
 
   setOnChange(cb) {
     this._currentActiveElement = this.getElement().querySelector(`.trip-tabs__btn--active`);
-    console.log(this._currentActiveElement);
-
-
     this.getElement().addEventListener(`click`, (evt) => {
       this._currentActiveElement.classList.remove(`trip-tabs__btn--active`);
       this._currentActiveElement = evt.target;
-      this._currentActiveElement.classList.add(`trip-tabs__btn--active`)
+      this._currentActiveElement.classList.add(`trip-tabs__btn--active`);
       cb(evt.target.text);
-      console.log(evt.target.text)
-
-    })
+    });
   }
 }
