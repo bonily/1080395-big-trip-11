@@ -46,7 +46,6 @@ const createOfferMarkup = (offers) => {
  * @return {string} - возвращает разметку для точки маршрта
  */
 const createTripItemTemplate = ({eventType, destination, price, startEventTime, endEventTime, offers}) => {
-  //const destination = DESTINATION_MAP[destinationName];
   const eventDuration = getEventDuration(startEventTime, endEventTime);
   const offerMarkup = createOfferMarkup(offers);
 

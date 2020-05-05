@@ -1,4 +1,4 @@
-import Item from "./models/item.js";
+import Item from "../models/item.js";
 
 const Method = {
   GET: `GET`,
@@ -32,16 +32,17 @@ const API = class {
     return this._load({url: `offers`})
       .then((response) => response.json());
   }
+
   getDestinations() {
     return this._load({url: `destinations`})
       .then((response) => response.json());
   }
 
-  updateItem(id, data) {
+  updateItem(id, item) {
     return this._load({
       url: `points/${id}`,
       method: `PUT`,
-      body: JSON.stringify(data.toRAW()),
+      body: JSON.stringify(item.toRAW()),
       headers: new Headers({"Content-Type": `application/json`}),
     })
       .then((response) => response.json())
@@ -61,6 +62,16 @@ const API = class {
 
   deleteItem(id) {
     return this._load({url: `points/${id}`, method: Method.DELETE});
+  }
+
+  sync(data) {
+    return this._load({
+      url: `points/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+      .then((response) => response.json());
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {

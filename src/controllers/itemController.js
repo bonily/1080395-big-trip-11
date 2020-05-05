@@ -41,6 +41,7 @@ const parseFormData = (formData, OfferMap, DestinationMap) => {
     "date_from": new Date(getCurrentDateFromValue(formData.get(`event-start-time`))).toJSON(),
     "date_to": new Date(getCurrentDateFromValue(formData.get(`event-end-time`))).toJSON(),
     "offers": aviableOffers,
+    "is_favorite": Boolean(formData.get(`event-favorite`)),
   });
 };
 
@@ -76,7 +77,7 @@ export default class ItemController {
     this._itemEditComponent.setFavoriteButtonClickHandler(() => {
       const data = Item.clone(item);
       data.isFavorite = !data.isFavorite;
-      this._onDataChange(this, item, data);
+      this._onDataChange(this, item, data, `favorite`);
     });
 
     this._itemComponent.setEditButtonHadler((evt) => {
@@ -89,9 +90,9 @@ export default class ItemController {
     this._itemEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
 
+
       const newItem = parseFormData(this._itemEditComponent.getData(), OfferMap, DestinationMap);
       newItem.id = item.id;
-      newItem.isFavorite = item.isFavorite;
       this._itemEditComponent.setData({
         saveButtonText: `Saving...`,
       }, `disable`);
@@ -132,7 +133,6 @@ export default class ItemController {
     switch (mode) {
       case Mode.DEFAULT:
         if (oldItemEditComponent) {
-        //   //replace(this._itemComponent, oldItemComponent);
         replace(this._itemEditComponent, oldItemEditComponent);
         this._replaceEditToItem();
          } else {
@@ -148,17 +148,11 @@ export default class ItemController {
         document.addEventListener(`keydown`, this._onEscKeyDown);
         render(this._container, this._itemEditComponent, RenderPosition.AFTERBEGIN);
         break;
+
+      case Mode.EDIT:
     }
-
-
-    // if (oldItemEditComponent) {
-    //   // replace(oldItemComponent, this._itemComponent);
-    //   replace(this._itemEditComponent, oldItemEditComponent);
-    // } else {
-    //   render(this._container, this._itemComponent, RenderPosition.BEFOREEND);
-    // }
+  
   }
-
   destroy() {
     remove(this._itemEditComponent);
     remove(this._itemComponent);

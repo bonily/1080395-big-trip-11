@@ -169,16 +169,19 @@ export default class TripController {
     });
   }
 
-  onDataChange(oldData, newData) {
-    this._onDataChange(oldData, newData);
+  onDataChange(itemController, oldData, newData, favorite) {
+    this._onDataChange(itemController, oldData, newData, favorite);
   }
 
-  _onDataChange(itemController, oldData, newData) {
+  _onDataChange(itemController, oldData, newData, favorite) {
     this._api.updateItem(oldData.id, newData)
       .then((item) => {
         const isSuccess = this._itemsModel.updateItem(oldData.id, item);
 
         if (isSuccess) {
+          if (favorite) {
+            return;
+          }
           itemController.render(item, `default`);
         }
       })

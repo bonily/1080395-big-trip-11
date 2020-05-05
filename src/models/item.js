@@ -36,5 +36,5 @@ export default class Item {
 
   static clone(data) {
     return new Item(data.toRAW());
-}
+  }
 }
