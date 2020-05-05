@@ -54,7 +54,6 @@ const createElement = (template) => {
  * @return {array} - возвращает массив объектов (ключ: значения (массив точек маршрута), отсортированный по датам)
  */
 const groupTripItemsByKey = (items, key) => {
-  //let transformItemGroup = null;
 
   if (key === KeyMap.start) {
     const transformItemGroup = items.reduce((acc, item) => {

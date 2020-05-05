@@ -169,7 +169,6 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
 };
 
 const checkDestinationValue = (value, component, DestinationMap) => {
-  console.log(Object.keys(DestinationMap));
   if (Object.keys(DestinationMap).indexOf(value) !== -1) {
     component.setCustomValidity(``);
     return true;
@@ -219,6 +218,7 @@ export default class TripEditComponent extends AbstractSmartComponent {
   getData() {
     const form = this.getElement().querySelector(`.event--edit`);
     const formData = new FormData(form);
+    console.log(formData);
 
     return formData;
   }
