@@ -1,5 +1,5 @@
 import {render, RenderPosition, remove} from "../utils/render.js";
-import TripMainInfoComponent from "../components/trip-main-info.js"
+import TripMainInfoComponent from "../components/trip-main-info.js";
 
 export default class MainInfoController {
   constructor(container, itemsModel) {
@@ -24,5 +24,5 @@ export default class MainInfoController {
   rerender() {
     remove(this._mainInfoComponent);
     this.render();
-}
+  }
 }
