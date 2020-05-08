@@ -1,5 +1,5 @@
+import AbstractComponent from "./abstract-component.js";
 import {MONTH_NAMES} from "../const.js";
-import AbstractComponent from "./abstractComponent.js";
 
 
 /**
@@ -19,6 +19,7 @@ const createTripDayTemplate = (day, dayIndex) => {
           return element;
         })
           .join(` `);
+
     return (
       `<li class="trip-days__item  day">
         <div class="day__info">
@@ -41,7 +42,6 @@ export default class TripDayComponent extends AbstractComponent {
     super();
 
     this._day = day;
-
     this._index = dayIndex;
   }
 

@@ -1,13 +1,13 @@
 export default class Item {
-  constructor(data) {
-    this.id = data.id;
-    this.eventType = data.type;
-    this.destination = data.destination;
-    this.price = data[`base_price`];
-    this.startEventTime = new Date(data[`date_from`]);
-    this.endEventTime = new Date(data[`date_to`]);
-    this.offers = data[`offers`];
-    this.isFavorite = Boolean(data[`is_favorite`]);
+  constructor(item) {
+    this.id = item.id;
+    this.eventType = item.type;
+    this.destination = item.destination;
+    this.price = item[`base_price`];
+    this.startEventTime = new Date(item[`date_from`]);
+    this.endEventTime = new Date(item[`date_to`]);
+    this.offers = item[`offers`];
+    this.isFavorite = Boolean(item[`is_favorite`]);
   }
 
   toRAW() {
@@ -20,21 +20,18 @@ export default class Item {
       "date_to": this.endEventTime.toJSON(),
       "offers": this.offers,
       "is_favorite": this.isFavorite,
-
     };
   }
 
-  static parseItem(data) {
-    // console.log(data)
-    return new Item(data);
+  static parseItem(item) {
+    return new Item(item);
   }
 
-  static parseItems(data) {
-    // console.log(data)
-    return data.map(Item.parseItem);
+  static parseItems(items) {
+    return items.map(Item.parseItem);
   }
 
-  static clone(data) {
-    return new Item(data.toRAW());
+  static clone(item) {
+    return new Item(item.toRAW());
   }
 }

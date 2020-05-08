@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstractComponent.js";
+import AbstractComponent from "./abstract-component.js";
 
 
 const createListLoadingTemplate = () => {
@@ -6,6 +6,7 @@ const createListLoadingTemplate = () => {
     `<p class="trip-events__msg">Loading...</p>`
   );
 };
+
 
 export default class ListLoading extends AbstractComponent {
   getTemplate() {

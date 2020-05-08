@@ -1,21 +1,12 @@
-import TripEditComponent from "../components/tripEdit.js";
-import TripItemComponent from "../components/tripItem.js";
-import {render, RenderPosition, replace, remove} from "../utils/render.js";
+
 import Item from "../models/item.js";
-import momentDurationFormatSetup from "moment-duration-format";
+import {FormState, ItemRenderModeMap} from "../const.js";
+import {getCurrentDateFromValue} from "../utils/common.js";
+import {render, RenderPosition, replace, remove} from "../utils/render.js";
+import TripDayItemsTemplate from "../components/trip-day-items.js";
+import TripEditComponent from "../components/trip-edit.js";
+import TripItemComponent from "../components/trip-item.js";
 
-
-const getCurrentDateFromValue = (value) => {
-  const dateValue = value.split(/[.,\/ - :]/);
-  const dateString = `20` + dateValue[2] + `-` + dateValue[1] + `-` + dateValue[0] + `T` + dateValue[3] + `:` + dateValue[4];
-  return dateString;
-};
-
-const Mode = {
-  DEFAULT: `default`,
-  EDIT: `edit`,
-  NEW: `new`
-};
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
@@ -45,27 +36,32 @@ const parseFormData = (formData, OfferMap, DestinationMap) => {
   });
 };
 
+
 export default class ItemController {
-  constructor(container, onDataChange, onViewChange, onDeleteItem, onNewItem, offerMap, destinationMap) {
+  constructor(container, onItemChange, onViewChange, onDeleteItem, onNewItem, offerMap, destinationMap) {
     this._container = container;
-    this._onDataChange = onDataChange;
+    this._onItemChange = onItemChange;
     this._onViewChange = onViewChange;
     this._onDeleteItem = onDeleteItem;
     this._onNewItem = onNewItem;
     this.isItemControllerActive = false;
     this.offerMap = offerMap;
     this.destinationMap = destinationMap;
+    this._item = null;
 
     this._itemComponent = null;
     this._itemEditComponent = null;
-    this._mode = Mode.DEFAULT;
+    this._mode = ItemRenderModeMap.DEFAULT;
+    this._replaceEditToItem = this._replaceEditToItem.bind(this);
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
-  render(item, mode) {
+  render(item, mode, spesialPlace) {
+    this._item = item;
     const OfferMap = this.offerMap;
     const DestinationMap = this.destinationMap;
+    const itemContainer = new TripDayItemsTemplate();
 
 
     const oldItemComponent = this._itemComponent;
@@ -75,119 +71,137 @@ export default class ItemController {
     this._itemEditComponent = new TripEditComponent(item, OfferMap, DestinationMap);
 
     this._itemEditComponent.setFavoriteButtonClickHandler(() => {
-      const data = Item.clone(item);
-      data.isFavorite = !data.isFavorite;
-      this._onDataChange(this, item, data, `favorite`);
+      const newItem = Item.clone(item);
+      newItem.isFavorite = !newItem.isFavorite;
+      this._onItemChange(this, item, newItem, `favorite`);
     });
 
-    this._itemComponent.setEditButtonHadler((evt) => {
+    this._itemComponent.setEditButtonClickHadler((evt) => {
       evt.preventDefault();
       this.isItemControllerActive = true;
+
       this._replaceItemToEdit();
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    this._itemEditComponent.setSubmitHandler((evt) => {
+    this._itemEditComponent.setFormSubmitHandler((evt) => {
       evt.preventDefault();
-
-
-      const newItem = parseFormData(this._itemEditComponent.getData(), OfferMap, DestinationMap);
+      const newItem = parseFormData(this._itemEditComponent.getFormData(), OfferMap, DestinationMap);
       newItem.id = item.id;
-      this._itemEditComponent.setData({
+      this._itemEditComponent.setNewButtonData({
         saveButtonText: `Saving...`,
-      }, `disable`);
+        isButtonAble: false,
+      });
 
+      this._itemEditComponent.changeFormState(FormState.DISABLED);
 
-      if (mode === Mode.NEW) {
-
+      if (mode === ItemRenderModeMap.NEW || mode === ItemRenderModeMap.FIRST) {
         this._onNewItem(newItem, this);
         return;
       }
 
       this.isItemControllerActive = false;
 
-      this._onDataChange(this, item, newItem);
+      this._onItemChange(this, item, newItem);
 
     });
 
-    this._itemEditComponent.setOnChangeTransferHandler();
-    this._itemEditComponent.setCheckValueHandler();
-
-    this._itemEditComponent.setDeleteHandler((evt) => {
+    this._itemEditComponent.setDeleteClickHandler((evt) => {
       evt.preventDefault();
 
-      if (mode === Mode.NEW) {
+      if (mode === ItemRenderModeMap.NEW || mode === ItemRenderModeMap.FIRST) {
         this.setDefaultView();
         this._onViewChange();
         return;
       }
 
-      this._itemEditComponent.setData({
+      this._itemEditComponent.setNewButtonData({
         deleteButtonText: `Deleting...`,
       }, `disable`);
+
+      this._itemEditComponent.changeFormState(FormState.DISABLED);
 
       this._onDeleteItem(item.id, this);
     });
 
+    this._itemEditComponent.setFormChangeHandler();
+    this._itemEditComponent.setCheckValueHandler();
+    this._itemEditComponent.setRollUpClickHandler(this._replaceEditToItem);
 
     switch (mode) {
-      case Mode.DEFAULT:
+      case ItemRenderModeMap.DEFAULT:
         if (oldItemEditComponent) {
-        replace(this._itemEditComponent, oldItemEditComponent);
-        this._replaceEditToItem();
-         } else {
-          render(this._container, this._itemComponent, RenderPosition.BEFOREEND);
+          replace(this._itemEditComponent, oldItemEditComponent);
+          this._replaceEditToItem();
+        } else {
+          render(this._container, itemContainer, RenderPosition.BEFOREEND);
+          render(itemContainer.getElement(), this._itemComponent, RenderPosition.BEFOREEND);
         }
         break;
-      case Mode.NEW:
+
+      case ItemRenderModeMap.NEW:
         if (oldItemEditComponent && oldItemComponent) {
           remove(oldItemComponent);
           remove(oldItemEditComponent);
         }
-        this._mode = Mode.NEW;
+        this._mode = ItemRenderModeMap.NEW;
+        const container = spesialPlace.parentElement;
+
+        render(container, this._itemEditComponent, RenderPosition.BEFOREELEMENT, spesialPlace);
         document.addEventListener(`keydown`, this._onEscKeyDown);
-        render(this._container, this._itemEditComponent, RenderPosition.AFTERBEGIN);
         break;
 
-      case Mode.EDIT:
+      case ItemRenderModeMap.FIRST:
+        this._mode = ItemRenderModeMap.NEW;
+        if (oldItemEditComponent && oldItemComponent) {
+          remove(oldItemComponent);
+          remove(oldItemEditComponent);
+        }
+        render(this._container, this._itemEditComponent, RenderPosition.BEFOREEND);
+        document.addEventListener(`keydown`, this._onEscKeyDown);
+        break;
     }
-  
   }
+
   destroy() {
     remove(this._itemEditComponent);
     remove(this._itemComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
+  setDefaultView() {
+    if (this._mode === ItemRenderModeMap.NEW) {
+      this.destroy();
+    } else if (this._mode === ItemRenderModeMap.EDIT) {
+      this._replaceEditToItem();
+    }
+  }
+
   _replaceItemToEdit() {
     this._onViewChange();
     replace(this._itemEditComponent, this._itemComponent);
-    this._mode = Mode.EDIT;
+    this._mode = ItemRenderModeMap.EDIT;
   }
 
   _replaceEditToItem() {
     replace(this._itemComponent, this._itemEditComponent);
-    this._mode = Mode.DEFAULT;
+    this._mode = ItemRenderModeMap.DEFAULT;
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _onEscKeyDown(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
-      if (this._mode === Mode.NEW) {
+      if (this._mode === ItemRenderModeMap.NEW) {
         this.destroy();
         this._onViewChange();
       }
-      this._replaceEditToItem();
-      document.removeEventListener(`keydown`, this._onEscKeyDown);
-    }
-  }
 
-  setDefaultView() {
-    if (this._mode === Mode.NEW) {
-      this.destroy();
-    } else if (this._mode === Mode.EDIT) {
+      this._itemEditComponent.resetChanges();
       this._replaceEditToItem();
+
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }
 

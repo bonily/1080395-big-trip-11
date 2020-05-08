@@ -286,10 +286,16 @@ main {
     opacity: 1; }
   .trip-filters__filter-label:active {
     opacity: 0.6; }
+  
 
+    
 .trip-filters__filter-input:checked + .trip-filters__filter-label {
   opacity: 1;
   cursor: default; }
+
+
+  
+
 
 .trip-search {
   -ms-flex-positive: 1;

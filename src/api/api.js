@@ -1,11 +1,13 @@
 import Item from "../models/item.js";
 
+
 const Method = {
   GET: `GET`,
   POST: `POST`,
   PUT: `PUT`,
   DELETE: `DELETE`
 };
+
 
 const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
@@ -16,12 +18,12 @@ const checkStatus = (response) => {
 };
 
 
-const API = class {
+export default class API {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint;
     this._authorization = authorization;
-
   }
+
   getItems() {
     return this._load({url: `points`})
       .then((response) => response.json())
@@ -64,11 +66,11 @@ const API = class {
     return this._load({url: `points/${id}`, method: Method.DELETE});
   }
 
-  sync(data) {
+  sync(items) {
     return this._load({
       url: `points/sync`,
       method: Method.POST,
-      body: JSON.stringify(data),
+      body: JSON.stringify(items),
       headers: new Headers({"Content-Type": `application/json`})
     })
       .then((response) => response.json());
@@ -83,6 +85,4 @@ const API = class {
         throw err;
       });
   }
-};
-
-export default API;
+}

@@ -4,9 +4,7 @@ export default class Store {
     this._storeKey = key;
     this._storeOffesKey = `offers`;
     this._storeDestinationKey = `destinations`;
-
   }
-
 
   getItems() {
     try {

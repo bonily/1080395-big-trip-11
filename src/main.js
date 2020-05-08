@@ -1,30 +1,25 @@
-import API from "./api/index.js";
+import API from "./api/api.js";
+import FilterController from "./controllers/filter-controller.js";
+import ItemsModel from "./models/items-model.js";
+import ListLoading from "./components/list-loading.js";
+import MainInfoController from "./controllers/main-info-controller.js";
+import {MAIN_FILTERS} from "./const.js";
+import {nanoid} from "nanoid";
 import Provider from "./api/provider.js";
+import {render, RenderPosition, remove} from "./utils/render.js";
+import StatisticsComponent from "./components/statistics.js";
 import Store from "./api/store.js";
-import TripController from "./controllers/tripController.js";
-import MainFiltersController from "./controllers/filterController.js";
-
-import {render, RenderPosition} from "./utils/render.js";
-
-import TripMainControlComponent from "./components/tripMainControls.js";
-import BoardTemplate from "./components/board.js";
-import ListLoading from "./components/listLoading.js";
-import ItemsModel from "./models/items.js";
-import {remove} from "./utils/render.js";
-import StatTemplate from "./components/stat.js";
+import TripBoardComponent from "./components/trip-board.js";
+import TripController from "./controllers/trip-controller.js";
+import TripMainControlComponent from "./components/trip-main-control.js";
 
 
-// const TASK_COUNT = 20;
-
+const AUTHORIZATION = `Basic ${nanoid()}`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
-const AUTHORIZATION = `Basic dXNlckBwYXfghjSIUYBVCDSzd29yZAo=`;
+
 const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v1`;
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
-const api = new API(END_POINT, AUTHORIZATION);
-const store = new Store(STORE_NAME, window.localStorage);
-const apiWithProvider = new Provider(api, store);
-const itemsModel = new ItemsModel();
 
 
 const siteHeaderTripElement = document.querySelector(`.trip-main`);
@@ -32,43 +27,56 @@ const siteHeaderMenuElement = siteHeaderTripElement.querySelector(`.trip-control
 const siteMainEventElement = document.querySelector(`.trip_container`);
 const newItemButton = siteHeaderTripElement.querySelector(`.trip-main__event-add-btn`);
 
-const boardContainer = new BoardTemplate();
+
+const api = new API(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
+
+const itemsModel = new ItemsModel();
+
 const listLoadingComponent = new ListLoading();
-const tripController = new TripController(boardContainer.getElement(), itemsModel, apiWithProvider, newItemButton);
-const filterController = new MainFiltersController(siteHeaderMenuElement, itemsModel);
-const statComponent = new StatTemplate(itemsModel);
+const statisticsComponent = new StatisticsComponent(itemsModel);
+const tripBoardComponent = new TripBoardComponent();
 const tripMainControlComponent = new TripMainControlComponent();
-// render(siteHeaderTripElement, new TripMainComponent(items), RenderPosition.AFTERBEGIN);
+
+
+const filterController = new FilterController(siteHeaderMenuElement, itemsModel, tripMainControlComponent);
+const tripController = new TripController(tripBoardComponent, itemsModel, apiWithProvider, newItemButton, filterController);
+const tripMainInfoController = new MainInfoController(siteHeaderTripElement, itemsModel);
+
+
 render(siteHeaderMenuElement, tripMainControlComponent, RenderPosition.BEFOREEND);
-
-
-render(siteMainEventElement, boardContainer, RenderPosition.BEFOREEND);
-render(siteMainEventElement, statComponent, RenderPosition.BEFOREEND);
-render(boardContainer.getElement(), listLoadingComponent, RenderPosition.BEFOREEND);
-
+render(siteMainEventElement, tripBoardComponent, RenderPosition.BEFOREEND);
+render(siteMainEventElement, statisticsComponent, RenderPosition.BEFOREEND);
+render(tripBoardComponent.getElement(), listLoadingComponent, RenderPosition.BEFOREEND);
 
 filterController.render();
+tripMainInfoController.render();
+statisticsComponent.hide();
 
-statComponent.hide();
-
-tripMainControlComponent.setOnChange((MenuItem) => {
+tripMainControlComponent.setOnControlClickHandler((MenuItem) => {
   switch (MenuItem) {
     case `Stats`:
-      boardContainer.hide();
-      statComponent.show();
+      tripBoardComponent.hide();
+      statisticsComponent.show();
+      filterController.activeFilter = MAIN_FILTERS.ALL;
+      filterController.rerender();
       break;
     case `Table`:
-      statComponent.hide();
-      boardContainer.show();
+      statisticsComponent.hide();
+      tripBoardComponent.show();
       break;
   }
-
 });
 
 newItemButton.addEventListener(`click`, () => {
+  if (tripController.checkIsListItemsFull()) {
+    filterController.onFilterChange(MAIN_FILTERS.ALL);
+    filterController.rerender();
+  }
+  statisticsComponent.hide();
+  tripBoardComponent.show();
   tripController.createNewItem();
-  statComponent.hide();
-  boardContainer.show();
 });
 
 Promise.all([
@@ -80,8 +88,10 @@ Promise.all([
   itemsModel.setOffers(offers);
   itemsModel.setDestinations(destinations);
   remove(listLoadingComponent);
+  filterController.rerender();
+  statisticsComponent.rerender();
   tripController.render();
-  statComponent.rerender();
+  tripMainInfoController.rerender();
 });
 
 window.addEventListener(`online`, () => {

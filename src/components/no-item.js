@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstractComponent.js";
+import AbstractComponent from "./abstract-component.js";
 
 
 const createNoItemTeplate = () => {
@@ -8,6 +8,7 @@ const createNoItemTeplate = () => {
 };
 
 export default class TripNoItemComponent extends AbstractComponent {
+
   getTemplate() {
     return createNoItemTeplate();
   }

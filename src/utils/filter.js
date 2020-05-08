@@ -4,11 +4,9 @@ const getNotCurrentItems = (items, date, type) => {
 
   return items.filter((item) => {
     if (type === `past`) {
-      return item.startEventTime < date;
+      return item.endEventTime < date;
     }
-
     return item.startEventTime > date;
-
   });
 };
 

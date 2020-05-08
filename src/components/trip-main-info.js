@@ -1,6 +1,7 @@
 import {MONTH_NAMES} from "../const.js";
 import {getCurrentDateValue, getSimpleDate} from "../utils/common.js";
-import AbstractComponent from "./abstractComponent.js";
+import AbstractComponent from "./abstract-component.js";
+
 
 const createTripDurationMarkup = (dates) => {
   const lastDateIndex = dates.length - 1;
@@ -13,13 +14,21 @@ const createTripDurationMarkup = (dates) => {
 };
 
 const createTripDestinationMarkup = (items) => {
-  return items.length < 3 ? items.map((item) => item.destination).join(` - `) : [].concat(items.slice(0, 1), items.slice(items.length - 1)).map((item) => item.destination).join(` — … — `);
+  return items.length < 3 ? items.map((item) => item.destination.name).join(` - `) : [].concat(items.slice(0, 1), items.slice(items.length - 1)).map((item) => item.destination.name).join(` — … — `);
 };
 
 const createTripMainInfoTemplate = (items) => {
-  const tripCost = items.map((item) => item.price).reduce((acc, price) => acc + price);
-  const tripDestinationInfo = createTripDestinationMarkup(items);
-  const tripDates = items
+  let tripCost = `0`;
+  let tripDestinationInfo = ``;
+  let tripDurationMarkup = ``;
+
+  if (items.length > 0) {
+    const offerCosts = [];
+    items.map((item) => item.offers.forEach((offer) => offerCosts.push(offer.price)))
+    tripCost = items.map((item) => item.price).reduce((acc, price) => acc + price, 0) + offerCosts.reduce((acc, offerCost) => acc + offerCost, 0);
+    const sortItems = items.slice().sort((a, b) => a.startEventTime - b.startEventTime);
+    tripDestinationInfo = createTripDestinationMarkup(sortItems);
+    const tripDates = items
                     .map((item) => item.startEventTime)
                     .sort((a, b) => {
                       if (getSimpleDate(a) < getSimpleDate(b)) {
@@ -30,7 +39,8 @@ const createTripMainInfoTemplate = (items) => {
                       }
                       return 0;
                     });
-  const tripDurationMarkup = createTripDurationMarkup(tripDates);
+    tripDurationMarkup = createTripDurationMarkup(tripDates);
+  }
 
   return (
     `<section class="trip-main__trip-info  trip-info">
@@ -46,7 +56,8 @@ const createTripMainInfoTemplate = (items) => {
   );
 };
 
-export default class TripMainComponent extends AbstractComponent {
+
+export default class TripMainInfoComponent extends AbstractComponent {
   constructor(items) {
     super();
     this._items = items;

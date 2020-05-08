@@ -1,10 +1,9 @@
-import AbstractComponent from "./abstractComponent.js";
+import AbstractComponent from "./abstract-component.js";
 
 
 const createItemsTemplate = () => {
   return (
     `<ul class="trip-events__list">
-
     </ul>`
   );
 };

@@ -1,6 +1,7 @@
 import Item from "../models/item.js";
 import {nanoid} from "nanoid";
 
+
 const isOnline = () => {
   return window.navigator.onLine;
 };
@@ -29,12 +30,11 @@ export default class Provider {
     if (isOnline()) {
       return this._api.getItems()
         .then((items) => {
-          const data = createStoreStructure(items.map((item) => item.toRAW()));
-          this._store.setItems(data);
+          const rawItems = createStoreStructure(items.map((item) => item.toRAW()));
+          this._store.setItems(rawItems);
+
           return items;
         });
-
-
     }
 
     const storeItems = Object.values(this._store.getItems());
@@ -51,9 +51,9 @@ export default class Provider {
         return offers;
       });
     }
+
     return Promise.resolve(this._store.getOffers());
   }
-
 
   getDestinations() {
     if (isOnline()) {
@@ -64,12 +64,13 @@ export default class Provider {
         return destinations;
       });
     }
+
     return Promise.resolve(this._store.getDestinations());
   }
 
   createItem(item) {
     if (isOnline()) {
-      return this._api.createTask(item)
+      return this._api.createItem(item)
       .then((newItem) => {
         this._store.setItem(newItem.id, newItem.toRAW());
 
@@ -94,6 +95,7 @@ export default class Provider {
         return newItem;
       });
     }
+
     const localItem = Item.clone(Object.assign(item, {id}));
 
     this._store.setItem(id, localItem.toRAW());
@@ -106,10 +108,12 @@ export default class Provider {
       return this._api.deleteItem(id)
         .then(() => this._store.removeItem(id));
     }
+
     this._store.removeItem(id);
 
     return Promise.resolve();
   }
+
   sync() {
     if (isOnline()) {
       const storeItems = Object.values(this._store.getItems());

@@ -1,7 +1,6 @@
-export const EVENT_TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
+export const EVENT_TYPES_TRANSPORT = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`];
 
 export const EVENT_TYPES_ACTIVITY = [`check-in`, `sightseeing`, `restaurant`];
-
 
 export const OFFERS = [
   {name: `car`, price: 200, description: `Rent a car`, checked: true},
@@ -41,7 +40,6 @@ export const OFFERS_MAPK = {
     price: 40,
     description: `Travel by train`,
   },
-
 };
 
 export const MONTH_NAMES = [
@@ -70,3 +68,21 @@ export const MAIN_FILTERS = {
   FUTURE: `future`,
   PAST: `past`,
 };
+
+export const FormState = {
+  DISABLED: `disabled`,
+  ABLED: `abled`,
+};
+
+export const KeyMap = {
+  START: `startEventTime`,
+  TYPE: `eventType`,
+};
+
+export const ItemRenderModeMap = {
+  DEFAULT: `default`,
+  EDIT: `edit`,
+  NEW: `new`,
+  FIRST: `firstNew`,
+};
+
