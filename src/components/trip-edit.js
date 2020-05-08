@@ -1,18 +1,24 @@
-import {capitalize, getDateTime} from "../utils/common.js";
-import AbstractSmartComponent from "./abstractSmartComponent.js";
+import AbstractSmartComponent from "./abstract-smart-component.js";
+import {capitalize, getDateTime, getCurrentDateFromValue} from "../utils/common.js";
+import {EVENT_TYPES_TRANSPORT, EVENT_TYPES_ACTIVITY, FormState} from "../const.js";
 import flatpickr from "flatpickr";
-import {EVENT_TYPES} from "../const.js";
-
 import "flatpickr/dist/flatpickr.min.css";
 
-const DefaultData = {
+const DefaultButtonMap = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`,
   isButtonAble: true,
 };
 
-const createOfferMarkup = (offer, currentOffers) => {
+const FormChangeMap = {
+  TYPE: `event-type`,
+  DESTINATION: `event-destination`,
+  START: `event-start-time`,
+  END: `event-end-time`,
+  FAVORITE: `event-favorite`,
+};
 
+const createOfferMarkup = (offer, currentOffers) => {
   const isOfferChecked = () => currentOffers.some((currentOffer) => currentOffer.title === offer.title) ? `checked` : ``;
   return (
     `<div class="event__offer-selector">
@@ -80,52 +86,47 @@ const createEventTypesMatkup = (type, eventType) => {
   );
 };
 
-
-const createTripEditTemplate = ({id, eventType, destination, price, startEventTime, endEventTime, offers, isFavorite}, OffersMap, DestinationMap, externalData) => {
+const createTripEditTemplate = ({id, eventType, destination, price, startEventTime, endEventTime, offers, isFavorite}, OffersMap, DestinationMap, _eexternalButtonData) => {
   const notNewItemElementMarkup = (id) ? createNotNewItemElementMarkup(isFavorite) : ` `;
   const avaiblableOffers = OffersMap[eventType];
   const offersMarkup = avaiblableOffers.map((offer) => createOfferMarkup(offer, offers)).join(`\n`);
   const descriptionMarup = destination === `` ? ` ` : createDestinationMarkup(destination);
   const dataListMarkup = Object.keys(DestinationMap).map((destinationForData) => createDataListMarkup(destinationForData)).join(`\n`);
-  const eventTransferTypesMarkup = EVENT_TYPES.slice(0, 7).map((type) => createEventTypesMatkup(type, eventType)).join(`\n`);
-  const eventActivityTypesMarkup = EVENT_TYPES.slice(-3).map((type) => createEventTypesMatkup(type, eventType)).join(`\n`);
+  const eventTransferTypesMarkup = EVENT_TYPES_TRANSPORT.map((type) => createEventTypesMatkup(type, eventType)).join(`\n`);
+  const eventActivityTypesMarkup = EVENT_TYPES_ACTIVITY.map((type) => createEventTypesMatkup(type, eventType)).join(`\n`);
+  const isEventTypeTransport = EVENT_TYPES_TRANSPORT.indexOf(eventType) > -1;
+  const isButtonAbleMarkup = _eexternalButtonData.isButtonAble ? `` : `disabled`;
+
 
   return (
-    `<li class="trip-events__item">
-    <form class="trip-events__item event  event--edit" action="#" method="post">
+    `<form class="trip-events__item event  event--edit" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
-            <label class="event__type  event__type-btn" for="event-type-toggle-1">
+            <label class="event__type  event__type-btn" for="event-type-toggle-1" >
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
-
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
-
                 ${eventTransferTypesMarkup}
               </fieldset>
-
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Activity</legend>
-
                 ${eventActivityTypesMarkup}
               </fieldset>
             </div>
           </div>
-
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              ${capitalize(eventType)} to
+              ${capitalize(eventType)} ${(isEventTypeTransport) ? `to` : `in`}
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination === `` ? `` : destination.name}" list="destination-list-1">
             <datalist id="destination-list-1">
               ${dataListMarkup}
              </datalist>
           </div>
-
            <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">
                 From
@@ -137,7 +138,6 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
               </label>
               <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDateTime(endEventTime)}">
             </div>
-
             <div class="event__field-group  event__field-group--price">
               <label class="event__label" for="event-price-1">
                 <span class="visually-hidden">Price</span>
@@ -145,18 +145,13 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
               </label>
               <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
             </div>
-
-            <button class="event__save-btn  btn  btn--blue" type="submit" ${externalData.isButtonAble ? `` : `disabled`}>${externalData.saveButtonText}</button>
-            <button class="event__reset-btn" type="reset" ${externalData.isButtonAble ? `` : `disabled`}>${id ? externalData.deleteButtonText : `Cancel`}</button>
-
-          ${notNewItemElementMarkup}
-
+            <button class="event__save-btn  btn  btn--blue" type="submit" ${isButtonAbleMarkup}>${_eexternalButtonData.saveButtonText}</button>
+            <button class="event__reset-btn" type="reset" ${isButtonAbleMarkup}>${id ? _eexternalButtonData.deleteButtonText : `Cancel`}</button>
+            ${notNewItemElementMarkup}
           </header>
-
           <section class="event__details">
             <section class="event__section  event__section--offers">
               <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
               <div class="event__available-offers">
               ${offersMarkup}
               </div>
@@ -177,6 +172,14 @@ const checkDestinationValue = (value, component, DestinationMap) => {
   return false;
 };
 
+const checkDateValue = (start, end, component) => {
+  if (end >= start) {
+    return true;
+  }
+  component.setCustomValidity(`Travel end date cannot be less than the start date`);
+  return false;
+};
+
 
 export default class TripEditComponent extends AbstractSmartComponent {
   constructor(item, OfferMap, DestinationMap) {
@@ -185,28 +188,32 @@ export default class TripEditComponent extends AbstractSmartComponent {
     this._item = item;
     this._submitCb = null;
     this._deleteCb = null;
+    this._rollUpCb = null;
+    this._itemCopy = this._item;
+
     this.offerMap = OfferMap;
     this.destinationMap = DestinationMap;
-    this._externalData = DefaultData;
+    this._externalButton = DefaultButtonMap;
 
     this._flatpickr = null;
     this._applyFlatpickr();
-
+    this._selectedStartTime = this._item.startEventTime;
+    this._selectedEndTime = this._item.endEventTime;
   }
 
   getTemplate() {
-    return createTripEditTemplate(this._item, this.offerMap, this.destinationMap, this._externalData);
+    return createTripEditTemplate(this._item, this.offerMap, this.destinationMap, this._externalButton);
   }
 
-  setFavoriteButtonClickHandler(cb) {
-    const setFavoriteButton = this.getElement().querySelector(`.event__favorite-checkbox`);
-    if (setFavoriteButton) {
-      setFavoriteButton.addEventListener(`change`, (evt) => {
-        evt.preventDefault();
-        cb();
-      });
-    }
+  getFormData() {
+    const form = this.getElement();
+    const formData = new FormData(form);
+    return formData;
+  }
 
+  setNewButtonData(newButtonData) {
+    this._externalButton = Object.assign({}, DefaultButtonMap, newButtonData);
+    this.rerender();
   }
 
   rerender() {
@@ -215,56 +222,32 @@ export default class TripEditComponent extends AbstractSmartComponent {
     this._applyFlatpickr();
   }
 
-  getData() {
-    const form = this.getElement().querySelector(`.event--edit`);
-    const formData = new FormData(form);
-    console.log(formData);
-
-    return formData;
-  }
-
-  setCheckValueHandler() {
-
-    const component = this.getElement();
-    const destinationComponent = component.querySelector(`#event-destination-1`);
-
-    component.addEventListener(`click`, () => {
-      checkDestinationValue(destinationComponent.value, destinationComponent, this.destinationMap);
-    }
-    );
-  }
-
-  setSubmitHandler(cb) {
-    this.getElement().addEventListener(`submit`, cb);
-
-    this._submitCb = cb;
-  }
-
-  setDeleteHandler(cb) {
-    const deleteButton = this.getElement().querySelector(`.event__reset-btn`);
-
-    deleteButton.addEventListener(`click`, cb);
-    this._deleteCb = cb;
-  }
-
-  setOnChangeTransferHandler() {
-    this.getElement().addEventListener(`change`, (evt) => {
-      switch (evt.target.name) {
-        case `event-type`:
-          if (evt.target.value === `on`) {
-            return;
-          }
-          this._item.eventType = evt.target.value;
-          this.rerender();
-          break;
-        case `event-destination`:
-          if (checkDestinationValue(evt.target.value, evt.target, this.destinationMap)) {
-            this._item.destination = this.destinationMap[evt.target.value];
-            this.rerender();
-          }
-          break;
-      }
+  resetChanges() {
+    const isItemFavorite = this._item.isFavorite;
+    this._item = Object.assign(this._item, this._itemCopy, {
+      isFavorite: isItemFavorite,
     });
+  }
+
+  recoveryListeners() {
+    this.setFormSubmitHandler(this._submitCb);
+    this.setDeleteClickHandler(this._deleteCb);
+    this.setFormChangeHandler();
+    this.setRollUpClickHandler(this._rollUpCb);
+    this.setCheckValueHandler();
+  }
+
+  reset() {
+    this.rerender();
+  }
+
+  changeFormState(state) {
+    if (state === FormState.DISABLED) {
+      this.getElement().querySelectorAll(`.event__input, .event__type-toggle, .event__offer-checkbox, .event__favorite-checkbox`)
+      .forEach((elem) => {
+        elem.setAttribute(FormState.DISABLED, FormState.DISABLED);
+      });
+    }
   }
 
   _applyFlatpickr() {
@@ -276,40 +259,97 @@ export default class TripEditComponent extends AbstractSmartComponent {
     const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
 
     dateElements.forEach((dateElement) => {
-      const typeEventDate = dateElement.name.split(`-`)[1] + `EventTime`;
+      const typeDate = dateElement.name.split(`-`)[1];
+      const typeEventDate = typeDate + `EventTime`;
       this._flatpickr = flatpickr(dateElement, {
         allowInput: true,
         defaultDate: this._item[typeEventDate],
         enableTime: true,
-        dateFormat: `d/m/y H:i`
+        dateFormat: `d/m/y H:i`,
       });
     });
   }
 
-  recoveryListeners() {
-    this.setSubmitHandler(this._submitCb);
-    this.setDeleteHandler(this._deleteCb);
-    this.setOnChangeTransferHandler();
+  setFavoriteButtonClickHandler(cb) {
+    const setFavoriteButton = this.getElement().querySelector(`.event__favorite-checkbox`);
+    if (setFavoriteButton) {
+      setFavoriteButton.addEventListener(`change`, (evt) => {
+        evt.preventDefault();
+        cb();
+      });
+    }
   }
 
-  reset() {
-    this.rerender();
-  }
+  setCheckValueHandler() {
 
-  setData(data, state) {
-    this._externalData = Object.assign({}, DefaultData, data);
-    this.rerender();
-    this._changeFormstate(state);
-  }
+    const component = this.getElement();
+    const endTime = component.querySelector(`#event-end-time-1`);
+    const destinationComponent = component.querySelector(`#event-destination-1`);
 
-  _changeFormstate(state) {
-    this.getElement().querySelectorAll(`.event__input, .event__offer-checkbox, .event__type`)
-    .forEach((elem) => {
-      if (state === `disable`) {
-        elem.setAttribute(`disabled`, `disabled`);
-      }
-      elem.removeAttribute(`disabled`);
+    component.addEventListener(`click`, () => {
+      checkDestinationValue(destinationComponent.value, destinationComponent, this.destinationMap);
+      checkDateValue(this._selectedStartTime, this._selectedEndTime, endTime);
     });
+  }
 
+  setFormSubmitHandler(cb) {
+    this.getElement().addEventListener(`submit`, cb);
+
+    this._submitCb = cb;
+  }
+
+  setDeleteClickHandler(cb) {
+    const deleteButton = this.getElement().querySelector(`.event__reset-btn`);
+
+    deleteButton.addEventListener(`click`, cb);
+    this._deleteCb = cb;
+  }
+
+  setFormChangeHandler() {
+    this.getElement().addEventListener(`change`, (evt) => {
+      this._itemCopy = Object.assign({}, this._item);
+      switch (evt.target.name) {
+        case FormChangeMap.TYPE:
+          if (evt.target.value === `on`) {
+            return;
+          }
+          this._item.eventType = evt.target.value;
+          this.rerender();
+          break;
+
+        case FormChangeMap.DESTINATION:
+          if (checkDestinationValue(evt.target.value, evt.target, this.destinationMap)) {
+            this._item.destination = this.destinationMap[evt.target.value];
+            this.rerender();
+          }
+          break;
+
+        case FormChangeMap.START:
+          this._selectedStartTime = new Date(getCurrentDateFromValue(evt.target.value));
+          break;
+
+        case FormChangeMap.END:
+          this._selectedEndTime = new Date(getCurrentDateFromValue(evt.target.value));
+          evt.target.setCustomValidity(``);
+          break;
+
+        case FormChangeMap.FAVORITE:
+          this._item.isFavorite = Boolean(evt.target.value);
+          break;
+      }
+    });
+  }
+
+  setRollUpClickHandler(cb) {
+    const rollUpButton = this.getElement().querySelector(`.event__rollup-btn`);
+    this._rollUpCb = cb;
+
+    if (rollUpButton) {
+      rollUpButton.addEventListener(`click`, () => {
+        this.resetChanges();
+        this.rerender();
+        cb();
+      });
+    }
   }
 }

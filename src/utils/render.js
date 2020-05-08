@@ -4,6 +4,7 @@ const RenderPosition = {
   BEFOREELEMENT: `before`
 };
 
+
 const render = (container, component, place, specialPlace) => {
   switch (place) {
     case RenderPosition.AFTERBEGIN:
@@ -39,5 +40,6 @@ const remove = (component) => {
   component.getElement().remove();
   component.removeElement();
 };
+
 
 export {RenderPosition, render, replace, remove};

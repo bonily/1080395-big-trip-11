@@ -1,10 +1,5 @@
 import moment from "moment";
-
-
-const KeyMap = {
-  start: `startEventTime`,
-  type: `eventType`,
-};
+import {KeyMap} from "../const.js";
 
 
 /**
@@ -16,7 +11,6 @@ const getEventDuration = (start, end) => {
   const duretionMs = end.getTime() - start.getTime();
   return moment.duration(duretionMs, `milliseconds`).format(`DD[D] hh[H] mm[M]`);
 };
-
 
 /**
  * @param {Date} date
@@ -47,7 +41,6 @@ const createElement = (template) => {
   return newElement.firstChild;
 };
 
-
 /**
  * @param {array} items - получает массив объектов (точки маршрута) из Main, преобразует в объект формата ключ (день путешествия, дата) : значение (массив точек маршрута для этого дня)
  * @param {String} key - ключ, по которому будет происходить группировка
@@ -55,7 +48,7 @@ const createElement = (template) => {
  */
 const groupTripItemsByKey = (items, key) => {
 
-  if (key === KeyMap.start) {
+  if (key === KeyMap.START) {
     const transformItemGroup = items.reduce((acc, item) => {
       if (acc[getSimpleDate(item[key])] === undefined) {
         acc[getSimpleDate(item[key])] = [];
@@ -65,7 +58,6 @@ const groupTripItemsByKey = (items, key) => {
     }, {});
     return Object.entries(transformItemGroup).sort();
   }
-
 
   return items.reduce((acc, item) => {
     if (acc[item[key]] === undefined) {
@@ -84,8 +76,8 @@ const capitalize = (type) => {
 
 const getRandomId = () => Date.parse(new Date()) + Math.random();
 
-const createOffersMap = (data) => {
-  return data.reduce((acc, item) => {
+const createOffersMap = (items) => {
+  return items.reduce((acc, item) => {
     if (acc[item.type] === undefined) {
       acc[item.type] = [];
     }
@@ -94,8 +86,8 @@ const createOffersMap = (data) => {
   }, {});
 };
 
-const createDestinationsMap = (data) => {
-  return data.reduce((acc, item) => {
+const createDestinationsMap = (items) => {
+  return items.reduce((acc, item) => {
     if (acc[item.name] === undefined) {
       acc[item.name] = [];
     }
@@ -104,4 +96,10 @@ const createDestinationsMap = (data) => {
   }, {});
 };
 
-export {getCurrentDateValue, getSimpleDate, createElement, groupTripItemsByKey, capitalize, getRandomId, getDateTime, createOffersMap, createDestinationsMap, getEventDuration};
+const getCurrentDateFromValue = (value) => {
+  const dateValue = value.split(/[.,\/ - :]/);
+  const dateString = `20` + dateValue[2] + `-` + dateValue[1] + `-` + dateValue[0] + `T` + dateValue[3] + `:` + dateValue[4];
+  return dateString;
+};
+
+export {getCurrentDateValue, getSimpleDate, createElement, groupTripItemsByKey, capitalize, getRandomId, getDateTime, createOffersMap, createDestinationsMap, getEventDuration, getCurrentDateFromValue};

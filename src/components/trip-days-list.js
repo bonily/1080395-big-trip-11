@@ -1,4 +1,5 @@
-import AbstractCompinent from "./abstractComponent.js";
+import AbstractCompinent from "./abstract-component.js";
+
 
 /**
  * @param {Object} trip  - объект с группированными по датам точкам путешествия, каждая уникальная дата = свойство
@@ -7,7 +8,6 @@ import AbstractCompinent from "./abstractComponent.js";
 const createTripDaysTemplate = () => {
   return (
     `<ul class="trip-days">
-      
     </ul>`
   );
 };

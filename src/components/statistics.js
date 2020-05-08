@@ -1,27 +1,32 @@
-/* eslint-disable no-new-object */
-import AbstractComponent from "./abstractComponent.js";
+import AbstractComponent from "./abstract-component.js";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import {EVENT_TYPES_ACTIVITY, KeyMap} from "../const.js";
 import {groupTripItemsByKey, capitalize} from "../utils/common.js";
-import {EVENT_TYPES_ACTIVITY} from "../const.js";
 import moment from "moment";
 
-const KeyMap = {
-  start: `startEventTime`,
-  type: `eventType`,
-};
+
+const BAR_HEIGHT = 55;
+
 
 const EventEmodsiMap = {
-  taxi: `🚕`, 
-  bus: `🚌`, 
-  train: `🚂`, 
-  ship: `🛳`, 
-  transport: `🚊`,
-  drive: `🚗`,
-  flight: `✈`, 
-  check: `🏨`,
-  sightseeing: `🏛`,
-  restaurant: `🍴`,
+  TAXI: `🚕`,
+  BUS: `🚌`,
+  TRAIN: `🚂`,
+  SHIP: `🛳`,
+  TRANSPORT: `🚊`,
+  DRIVE: `🚗`,
+  FLIGHT: `✈`,
+  CHECK: `🏨`,
+  SIGHTSEEING: `🏛`,
+  RESTAURANT: `🍴`,
+};
+
+
+const ChartType = {
+  MONEY: `money`,
+  TRANSPORT: `transport`,
+  TIME: `time`
 };
 
 
@@ -29,37 +34,35 @@ const convertDuratiomFormat = (ms) => {
   return moment.duration(ms, `milliseconds`).format(`DD[D] hh[H] mm[M]`);
 };
 
-const BAR_HEIGHT = 55;
-
 
 const formatDataForChart = (itemsGroup, chartType) => {
   let copyItemsGroup = Object.assign({}, itemsGroup);
-  let data = [];
+  let itemsForChart = [];
   switch (chartType) {
-    case `transport`:
+    case ChartType.TRANSPORT:
       EVENT_TYPES_ACTIVITY.forEach((type) => delete copyItemsGroup[type]);
       for (let key in copyItemsGroup) {
         if (copyItemsGroup[key] !== undefined) {
-          data.push([key, copyItemsGroup[key].length]);
+          itemsForChart.push([key, copyItemsGroup[key].length]);
         }
       }
       break;
 
-    case `money`:
+    case ChartType.MONEY:
       for (let key in copyItemsGroup) {
         if (copyItemsGroup[key] !== undefined) {
-          data.push([key, copyItemsGroup[key].reduce((acc, item) => {
+          itemsForChart.push([key, copyItemsGroup[key].reduce((acc, item) => {
             return acc + item.price;
           }, 0)]);
         }
       }
       break;
 
-    case `time`:
+    case ChartType.TIME:
       for (let key in copyItemsGroup) {
 
         if (copyItemsGroup[key] !== undefined) {
-          data.push([key, copyItemsGroup[key].reduce((acc, item) => {
+          itemsForChart.push([key, copyItemsGroup[key].reduce((acc, item) => {
             const durationItem = item.endEventTime.getTime() - item.startEventTime.getTime();
 
             return acc + durationItem;
@@ -69,28 +72,30 @@ const formatDataForChart = (itemsGroup, chartType) => {
       }
       break;
   }
-  return data.sort((a, b) => a[1] - b[1]);
+  return itemsForChart.sort((a, b) => a[1] - b[1]);
 };
 
 const moneyChart = (moneyCtx, itemsGroup) => {
-  const data = formatDataForChart(itemsGroup, `money`);
-  const eventTypes = data.map((type) => {
-    return EventEmodsiMap[type[0] === `check-in` ? `check` : [type[0]]] + ` ` + capitalize(type[0]);
+  const events = formatDataForChart(itemsGroup, ChartType.MONEY);
+  const eventLabels = events.map((type) => {
+    const eventEmodsi = EventEmodsiMap[type[0] === `check-in` ? `CHECK` : [type[0].toUpperCase()]];
+    return `${eventEmodsi} ${capitalize(type[0])}`;
   });
-  const labels = data.map((type) => type[1]);
+  const eventCosts = events.map((type) => type[1]);
 
-
-  moneyCtx.height = BAR_HEIGHT * eventTypes.length + 1;
+  moneyCtx.height = BAR_HEIGHT * eventLabels.length + 1;
   return new Chart(moneyCtx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: eventTypes,
+      labels: eventLabels,
       datasets: [{
-        data: labels,
+        data: eventCosts,
         backgroundColor: `#ffffff`,
         hoverBackgroundColor: `#ffffff`,
-        anchor: `start`
+        anchor: `start`,
+        barThickness: 44,
+        minBarLength: 50
       }]
     },
     options: {
@@ -103,7 +108,7 @@ const moneyChart = (moneyCtx, itemsGroup) => {
           anchor: `end`,
           align: `start`,
           formatter: (val) => `€ ${val}`
-}
+        }
       },
       title: {
         display: true,
@@ -124,7 +129,7 @@ const moneyChart = (moneyCtx, itemsGroup) => {
             display: false,
             drawBorder: false
           },
-          barThickness: 44,
+
         }],
         xAxes: [{
           ticks: {
@@ -135,7 +140,7 @@ const moneyChart = (moneyCtx, itemsGroup) => {
             display: false,
             drawBorder: false
           },
-          minBarLength: 50
+
         }],
       },
       legend: {
@@ -150,23 +155,26 @@ const moneyChart = (moneyCtx, itemsGroup) => {
 
 
 const transportChart = (transportCtx, itemsGroup) => {
-  const data = formatDataForChart(itemsGroup, `transport`);
-  const eventTypes = data.map((type) => {
-    return EventEmodsiMap[type[0] === `check-in` ? `check` : [type[0]]] + ` ` + capitalize(type[0]);
+  const events = formatDataForChart(itemsGroup, ChartType.TRANSPORT);
+  const eventLabels = events.map((type) => {
+    const eventEmodsi = EventEmodsiMap[type[0] === `check-in` ? `CHECK` : [type[0].toUpperCase()]];
+    return `${eventEmodsi} ${capitalize(type[0])}`;
   });
-  const labels = data.map((type) => type[1]);
+  const eventCosts = events.map((type) => type[1]);
 
-  transportCtx.height = BAR_HEIGHT * eventTypes.length + 1;
+  transportCtx.height = BAR_HEIGHT * eventLabels.length + 1;
   return new Chart(transportCtx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: eventTypes,
+      labels: eventLabels,
       datasets: [{
-        data: labels,
+        data: eventCosts,
         backgroundColor: `#ffffff`,
         hoverBackgroundColor: `#ffffff`,
-        anchor: `start`
+        anchor: `start`,
+        barThickness: 44,
+        minBarLength: 50
       }]
     },
     options: {
@@ -200,7 +208,7 @@ const transportChart = (transportCtx, itemsGroup) => {
             display: false,
             drawBorder: false
           },
-          barThickness: 44,
+
         }],
         xAxes: [{
           ticks: {
@@ -211,7 +219,7 @@ const transportChart = (transportCtx, itemsGroup) => {
             display: false,
             drawBorder: false
           },
-          minBarLength: 50
+
         }],
       },
       legend: {
@@ -226,24 +234,27 @@ const transportChart = (transportCtx, itemsGroup) => {
 
 
 const timeSpendChart = (timeSpendCtx, itemsGroup) => {
-  const data = formatDataForChart(itemsGroup, `time`);
-  const eventTypes = data.map((type) => {
-    return EventEmodsiMap[type[0] === `check-in` ? `check` : [type[0]]] + ` ` + capitalize(type[0]);
+  const events = formatDataForChart(itemsGroup, ChartType.TIME);
+  const eventLabels = events.map((type) => {
+    const eventEmodsi = EventEmodsiMap[type[0] === `check-in` ? `CHECK` : [type[0].toUpperCase()]];
+    return `${eventEmodsi} ${capitalize(type[0])}`;
   });
-  const labels = data.map((type) => type[1]);
+  const eventCosts = events.map((type) => type[1]);
 
-  timeSpendCtx.height = BAR_HEIGHT * eventTypes.length + 1;
+  timeSpendCtx.height = BAR_HEIGHT * eventLabels.length + 1;
 
   return new Chart(timeSpendCtx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: eventTypes,
+      labels: eventLabels,
       datasets: [{
-        data: labels,
+        data: eventCosts,
         backgroundColor: `#ffffff`,
         hoverBackgroundColor: `#ffffff`,
-        anchor: `start`
+        anchor: `start`,
+        barThickness: 44,
+        minBarLength: 100
       }]
     },
     options: {
@@ -277,7 +288,7 @@ const timeSpendChart = (timeSpendCtx, itemsGroup) => {
             display: false,
             drawBorder: false
           },
-          barThickness: 44,
+
         }],
         xAxes: [{
           ticks: {
@@ -288,7 +299,7 @@ const timeSpendChart = (timeSpendCtx, itemsGroup) => {
             display: false,
             drawBorder: false
           },
-          minBarLength: 50
+
         }],
       },
       legend: {
@@ -302,30 +313,31 @@ const timeSpendChart = (timeSpendCtx, itemsGroup) => {
 };
 
 
-
 const createStatTemplate = () => {
   return (
     `<section class="statistics">
-    <h2 class="visually-hidden">Trip statistics</h2>
+      <h2 class="visually-hidden">Trip statistics</h2>
 
-    <div class="statistics__item statistics__item--money">
-      <canvas class="statistics__chart  statistics__chart--money" width="900"></canvas>
-    </div>
+      <div class="statistics__item statistics__item--money">
+        <canvas class="statistics__chart  statistics__chart--money" width="900"></canvas>
+      </div>
 
-    <div class="statistics__item statistics__item--transport">
-      <canvas class="statistics__chart  statistics__chart--transport" width="900"></canvas>
-    </div>
+      <div class="statistics__item statistics__item--transport">
+        <canvas class="statistics__chart  statistics__chart--transport" width="900"></canvas>
+      </div>
 
-    <div class="statistics__item statistics__item--time-spend">
-      <canvas class="statistics__chart  statistics__chart--time" width="900"></canvas>
-    </div>
-  </section>`
+      <div class="statistics__item statistics__item--time-spend">
+        <canvas class="statistics__chart  statistics__chart--time" width="900"></canvas>
+      </div>
+    </section>`
   );
 };
 
-export default class StatTemplate extends AbstractComponent {
+
+export default class StatisticsComponent extends AbstractComponent {
   constructor(itemsModel) {
     super();
+
     this._itemsModel = itemsModel;
 
     this._moneyChart = null;
@@ -344,16 +356,14 @@ export default class StatTemplate extends AbstractComponent {
     return createStatTemplate();
   }
 
-  rerender(itemsModel) {
-    this._tasks = itemsModel;
-
+  rerender() {
     this._renderCharts();
   }
 
 
   _renderCharts() {
     const items = this._itemsModel.getItemsAll();
-    const groupedItems = groupTripItemsByKey(items, KeyMap.type);
+    const groupedItems = groupTripItemsByKey(items, KeyMap.TYPE);
 
     const element = this.getElement();
     const moneyCtx = element.querySelector(`.statistics__chart--money`);
@@ -366,15 +376,6 @@ export default class StatTemplate extends AbstractComponent {
     this._transportChart = transportChart(transportCtx, groupedItems);
     this._timeChart = timeSpendChart(timeSpendCtx, groupedItems);
     this._timeChart.generateLegend();
-  //   for (const i in this._timeChart.data.labels) {
-  //     if (this._timeChart.data.labels[i] !== undefined) {
-  //      let lab = this._timeChart.data.labels[i];
-  //      console.log(lab);
-  //      lab = capitalize(lab);
-  //    //   var $img = $("<img/>").attr("id", lab).attr("src", "https://www.free-country-flags.com/countries/"+lab+"/1/tiny/"+lab+".png");
-  //    //   $("#pics").append($img);
-  //     }
-  //     }
   }
 
   _resetCharts() {

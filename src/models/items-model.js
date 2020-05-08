@@ -1,17 +1,16 @@
-import {MAIN_FILTERS} from "../const.js";
-import {getItemsByFilter} from "../utils/filter.js";
 import {createOffersMap, createDestinationsMap} from "../utils/common.js";
+import {getItemsByFilter} from "../utils/filter.js";
+import {MAIN_FILTERS} from "../const.js";
+
 
 export default class ItemsModel {
   constructor() {
     this._items = [];
     this._offersMap = {};
     this._destinationsMap = {};
-    this._activeFilter = MAIN_FILTERS.ALL;
-
     this._onDataChangeHandlers = [];
     this._filterChangeHandlers = [];
-
+    this._activeFilter = MAIN_FILTERS.ALL;
   }
 
   getItems() {
@@ -21,7 +20,6 @@ export default class ItemsModel {
   getItemsAll() {
     return this._items;
   }
-
 
   setItems(items) {
     this._items = Array.from(items);
@@ -52,7 +50,6 @@ export default class ItemsModel {
     }
 
     this._items = [].concat(this._items.slice(0, index), item, this._items.slice(index + 1));
-
     this._callHandlers(this._onDataChangeHandlers);
 
     return true;
@@ -66,7 +63,6 @@ export default class ItemsModel {
     }
 
     this._items = [].concat(this._items.slice(0, index), this._items.slice(index + 1));
-
     this._callHandlers(this._onDataChangeHandlers);
 
     return true;
