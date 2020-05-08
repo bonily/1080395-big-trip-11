@@ -7,7 +7,6 @@ export default class Store {
 
   }
 
-
   getItems() {
     try {
       return JSON.parse(this._storage.getItem(this._storeKey)) || {};
