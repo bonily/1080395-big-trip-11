@@ -286,6 +286,11 @@ main {
     opacity: 1; }
   .trip-filters__filter-label:active {
     opacity: 0.6; }
+
+  
+.trip-filters__filter-label--disabled:hover {
+  opacity: 0.6;
+}
   
 
     

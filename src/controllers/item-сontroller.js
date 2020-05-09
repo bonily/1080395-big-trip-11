@@ -51,6 +51,8 @@ export default class ItemController {
 
     this._itemComponent = null;
     this._itemEditComponent = null;
+    this.offerMap = offerMap;
+    this.destinationMap = destinationMap;
     this._mode = ItemRenderModeMap.DEFAULT;
     this._replaceEditToItem = this._replaceEditToItem.bind(this);
 
@@ -59,74 +61,18 @@ export default class ItemController {
 
   render(item, mode, spesialPlace) {
     this._item = item;
-    const OfferMap = this.offerMap;
-    const DestinationMap = this.destinationMap;
-    const itemContainer = new TripDayItemsTemplate();
+    this._mode = mode;
 
+    const itemContainer = new TripDayItemsTemplate();
 
     const oldItemComponent = this._itemComponent;
     const oldItemEditComponent = this._itemEditComponent;
 
     this._itemComponent = new TripItemComponent(item);
-    this._itemEditComponent = new TripEditComponent(item, OfferMap, DestinationMap);
+    this._itemEditComponent = new TripEditComponent(item, this.offerMap, this.destinationMap);
 
-    this._itemEditComponent.setFavoriteButtonClickHandler(() => {
-      const newItem = Item.clone(item);
-      newItem.isFavorite = !newItem.isFavorite;
-      this._onItemChange(this, item, newItem, `favorite`);
-    });
+    this._setItemHandlers();
 
-    this._itemComponent.setEditButtonClickHadler((evt) => {
-      evt.preventDefault();
-      this.isItemControllerActive = true;
-
-      this._replaceItemToEdit();
-      document.addEventListener(`keydown`, this._onEscKeyDown);
-    });
-
-    this._itemEditComponent.setFormSubmitHandler((evt) => {
-      evt.preventDefault();
-      const newItem = parseFormData(this._itemEditComponent.getFormData(), OfferMap, DestinationMap);
-      newItem.id = item.id;
-      this._itemEditComponent.setNewButtonData({
-        saveButtonText: `Saving...`,
-        isButtonAble: false,
-      });
-
-      this._itemEditComponent.changeFormState(FormState.DISABLED);
-
-      if (mode === ItemRenderModeMap.NEW || mode === ItemRenderModeMap.FIRST) {
-        this._onNewItem(newItem, this);
-        return;
-      }
-
-      this.isItemControllerActive = false;
-
-      this._onItemChange(this, item, newItem);
-
-    });
-
-    this._itemEditComponent.setDeleteClickHandler((evt) => {
-      evt.preventDefault();
-
-      if (mode === ItemRenderModeMap.NEW || mode === ItemRenderModeMap.FIRST) {
-        this.setDefaultView();
-        this._onViewChange();
-        return;
-      }
-
-      this._itemEditComponent.setNewButtonData({
-        deleteButtonText: `Deleting...`,
-      }, `disable`);
-
-      this._itemEditComponent.changeFormState(FormState.DISABLED);
-
-      this._onDeleteItem(item.id, this);
-    });
-
-    this._itemEditComponent.setFormChangeHandler();
-    this._itemEditComponent.setCheckValueHandler();
-    this._itemEditComponent.setRollUpClickHandler(this._replaceEditToItem);
 
     switch (mode) {
       case ItemRenderModeMap.DEFAULT:
@@ -177,6 +123,68 @@ export default class ItemController {
     }
   }
 
+
+  _setItemHandlers() {
+    this._itemEditComponent.setFavoriteButtonClickHandler(() => {
+      const newItem = Item.clone(this._item);
+      newItem.isFavorite = !newItem.isFavorite;
+      this._onItemChange(this, this._item, newItem, `favorite`);
+    });
+
+    this._itemComponent.setEditButtonClickHadler((evt) => {
+      evt.preventDefault();
+      this.isItemControllerActive = true;
+
+      this._replaceItemToEdit();
+      document.addEventListener(`keydown`, this._onEscKeyDown);
+    });
+
+    this._itemEditComponent.setFormSubmitHandler((evt) => {
+      evt.preventDefault();
+      const newItem = parseFormData(this._itemEditComponent.getFormData(), this.offerMap, this.destinationMap);
+      newItem.id = this._item.id;
+      this._itemEditComponent.setNewButtonData({
+        saveButtonText: `Saving...`,
+        isButtonAble: false,
+      });
+
+      this._itemEditComponent.changeFormState(FormState.DISABLED);
+
+      if (this._mode === ItemRenderModeMap.NEW || this._mode === ItemRenderModeMap.FIRST) {
+        this._onNewItem(newItem, this);
+        return;
+      }
+
+      this.isItemControllerActive = false;
+
+      this._onItemChange(this, this._item, newItem);
+
+    });
+
+    this._itemEditComponent.setDeleteClickHandler((evt) => {
+      evt.preventDefault();
+
+      if (this._mode === ItemRenderModeMap.NEW || this._mode === ItemRenderModeMap.FIRST) {
+        this.setDefaultView();
+        this._onViewChange();
+        return;
+      }
+
+      this._itemEditComponent.setNewButtonData({
+        deleteButtonText: `Deleting...`,
+        isButtonAble: false,
+      });
+
+      this._itemEditComponent.changeFormState(FormState.DISABLED);
+
+      this._onDeleteItem(this._item.id, this);
+    });
+
+    this._itemEditComponent.setFormChangeHandler();
+    this._itemEditComponent.setCheckValueHandler();
+    this._itemEditComponent.setRollUpClickHandler(this._replaceEditToItem);
+  }
+
   _replaceItemToEdit() {
     this._onViewChange();
     replace(this._itemEditComponent, this._itemComponent);
@@ -206,18 +214,7 @@ export default class ItemController {
   }
 
   shake() {
-    this._itemEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._itemComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-
-    setTimeout(() => {
-      this._itemEditComponent.getElement().style.animation = ``;
-      this._itemComponent.getElement().style.animation = ``;
-
-      this._itemEditComponent.setData({
-        saveButtonText: `Save`,
-        deleteButtonText: `Delete`,
-      }, `able`);
-    }, SHAKE_ANIMATION_TIMEOUT);
+    this._itemEditComponent.shake(SHAKE_ANIMATION_TIMEOUT);
   }
 
 }

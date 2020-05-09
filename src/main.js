@@ -14,7 +14,8 @@ import TripController from "./controllers/trip-controller.js";
 import TripMainControlComponent from "./components/trip-main-control.js";
 
 
-const AUTHORIZATION = `Basic ${nanoid()}`;
+const AUTHORIZATION = window.localStorage.getItem(`authToken`) || `Basic ${nanoid()}`;
+window.localStorage.setItem(`authToken`, AUTHORIZATION);
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 
 const STORE_PREFIX = `bigtrip-localstorage`;
@@ -104,11 +105,12 @@ window.addEventListener(`offline`, () => {
   document.title += ` [offline]`;
 });
 
-window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`./sw.js`)
-    .then(() => {
-      // Действие, в случае успешной регистрации ServiceWorker
-    }).catch(() => {
-      // Действие, в случае ошибки при регистрации ServiceWorker
-    });
-});
+
+// window.addEventListener(`load`, () => {
+//   navigator.serviceWorker.register(`./sw.js`)
+//     .then(() => {
+//       // Действие, в случае успешной регистрации ServiceWorker
+//     }).catch(() => {
+//       // Действие, в случае ошибки при регистрации ServiceWorker
+//     });
+// });

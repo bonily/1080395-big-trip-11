@@ -13,7 +13,6 @@ export default class FilterController {
     this._filterComponent = null;
     this.activeFilter = MAIN_FILTERS.ALL;
 
-    this._onDataChange = this._onDataChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
     this.onFilterChange = this._onFilterChange.bind(this);
     this.rerender = this.rerender.bind(this);
@@ -21,7 +20,7 @@ export default class FilterController {
 
   render() {
     const container = this._container;
-    const allItems = this._itemsModel.getItems();
+    const allItems = this._itemsModel.getItemsAll();
     const filters = Object.values(MAIN_FILTERS).map((filter) => {
       return {
         name: filter,
@@ -34,13 +33,14 @@ export default class FilterController {
     render(container, this._filterComponent, RenderPosition.BEFOREEND);
 
     this._filterComponent.setFilterTypeChangeHandler(this._onFilterChange);
-    this._itemsModel.setDataChangeHandler(this.rerender);
+    this._itemsModel.onDataChange(this.rerender);
   }
 
   _onFilterChange(filter) {
     this._tripMainControlComponent.rerender();
     this._itemsModel.setFilter(filter);
     this.activeFilter = filter;
+    this.rerender();
   }
 
   onFilterChange(filter) {
@@ -49,10 +49,6 @@ export default class FilterController {
 
   rerender() {
     remove(this._filterComponent);
-    this.render();
-  }
-
-  _onDataChange() {
     this.render();
   }
 }

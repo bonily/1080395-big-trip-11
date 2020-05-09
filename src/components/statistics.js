@@ -9,7 +9,7 @@ import moment from "moment";
 const BAR_HEIGHT = 55;
 
 
-const EventEmodsiMap = {
+const EventEmojiMap = {
   TAXI: `🚕`,
   BUS: `🚌`,
   TRAIN: `🚂`,
@@ -30,7 +30,7 @@ const ChartType = {
 };
 
 
-const convertDuratiomFormat = (ms) => {
+const convertDurationFormat = (ms) => {
   return moment.duration(ms, `milliseconds`).format(`DD[D] hh[H] mm[M]`);
 };
 
@@ -78,8 +78,8 @@ const formatDataForChart = (itemsGroup, chartType) => {
 const moneyChart = (moneyCtx, itemsGroup) => {
   const events = formatDataForChart(itemsGroup, ChartType.MONEY);
   const eventLabels = events.map((type) => {
-    const eventEmodsi = EventEmodsiMap[type[0] === `check-in` ? `CHECK` : [type[0].toUpperCase()]];
-    return `${eventEmodsi} ${capitalize(type[0])}`;
+    const eventEmoji = EventEmojiMap[type[0] === `check-in` ? `CHECK` : [type[0].toUpperCase()]];
+    return `${eventEmoji} ${capitalize(type[0])}`;
   });
   const eventCosts = events.map((type) => type[1]);
 
@@ -157,8 +157,8 @@ const moneyChart = (moneyCtx, itemsGroup) => {
 const transportChart = (transportCtx, itemsGroup) => {
   const events = formatDataForChart(itemsGroup, ChartType.TRANSPORT);
   const eventLabels = events.map((type) => {
-    const eventEmodsi = EventEmodsiMap[type[0] === `check-in` ? `CHECK` : [type[0].toUpperCase()]];
-    return `${eventEmodsi} ${capitalize(type[0])}`;
+    const eventEmoji = EventEmojiMap[type[0] === `check-in` ? `CHECK` : [type[0].toUpperCase()]];
+    return `${eventEmoji} ${capitalize(type[0])}`;
   });
   const eventCosts = events.map((type) => type[1]);
 
@@ -236,8 +236,8 @@ const transportChart = (transportCtx, itemsGroup) => {
 const timeSpendChart = (timeSpendCtx, itemsGroup) => {
   const events = formatDataForChart(itemsGroup, ChartType.TIME);
   const eventLabels = events.map((type) => {
-    const eventEmodsi = EventEmodsiMap[type[0] === `check-in` ? `CHECK` : [type[0].toUpperCase()]];
-    return `${eventEmodsi} ${capitalize(type[0])}`;
+    const eventEmoji = EventEmojiMap[type[0] === `check-in` ? `CHECK` : [type[0].toUpperCase()]];
+    return `${eventEmoji} ${capitalize(type[0])}`;
   });
   const eventCosts = events.map((type) => type[1]);
 
@@ -266,7 +266,7 @@ const timeSpendChart = (timeSpendCtx, itemsGroup) => {
           color: `#000000`,
           anchor: `end`,
           align: `start`,
-          formatter: (val) => `${convertDuratiomFormat(val)}`
+          formatter: (val) => `${convertDurationFormat(val)}`
         }
       },
       title: {

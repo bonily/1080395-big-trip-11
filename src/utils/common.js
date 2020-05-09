@@ -42,21 +42,20 @@ const createElement = (template) => {
 };
 
 /**
- * @param {array} items - получает массив объектов (точки маршрута) из Main, преобразует в объект формата ключ (день путешествия, дата) : значение (массив точек маршрута для этого дня)
- * @param {String} key - ключ, по которому будет происходить группировка
+ * @param {any[]} items - получает массив объектов (точки маршрута) из Main, преобразует в объект формата ключ (день путешествия, дата) : значение (массив точек маршрута для этого дня)
+ * @param {string} key - ключ, по которому будет происходить группировка
  * @return {array} - возвращает массив объектов (ключ: значения (массив точек маршрута), отсортированный по датам)
  */
 const groupTripItemsByKey = (items, key) => {
 
   if (key === KeyMap.START) {
-    const transformItemGroup = items.reduce((acc, item) => {
+    return items.reduce((acc, item) => {
       if (acc[getSimpleDate(item[key])] === undefined) {
         acc[getSimpleDate(item[key])] = [];
       }
       acc[getSimpleDate(item[key])].push(item);
       return acc;
     }, {});
-    return Object.entries(transformItemGroup).sort();
   }
 
   return items.reduce((acc, item) => {
@@ -70,17 +69,11 @@ const groupTripItemsByKey = (items, key) => {
 };
 
 const capitalize = (type) => {
-  type = type === `check` ? `check-in` : type;
   return type.charAt(0).toUpperCase() + type.slice(1);
 };
 
-const getRandomId = () => Date.parse(new Date()) + Math.random();
-
 const createOffersMap = (items) => {
   return items.reduce((acc, item) => {
-    if (acc[item.type] === undefined) {
-      acc[item.type] = [];
-    }
     acc[item.type] = item.offers;
     return acc;
   }, {});
@@ -88,18 +81,20 @@ const createOffersMap = (items) => {
 
 const createDestinationsMap = (items) => {
   return items.reduce((acc, item) => {
-    if (acc[item.name] === undefined) {
-      acc[item.name] = [];
-    }
     acc[item.name] = item;
     return acc;
   }, {});
 };
 
+/**
+ * @param {string} value  - дата из flatpicr, которая не парсится без доп функций
+ * @return {string}  - возвращает дату в формате yyyy-mm-ddTHH:MM
+ */
+
 const getCurrentDateFromValue = (value) => {
-  const dateValue = value.split(/[.,\/ - :]/);
-  const dateString = `20` + dateValue[2] + `-` + dateValue[1] + `-` + dateValue[0] + `T` + dateValue[3] + `:` + dateValue[4];
+  const [day, month, shortYear, hours, minutes] = value.split(/[.,\/ - :]/);
+  const dateString = `20${shortYear}-${month}-${day}T${hours}:${minutes}`;
   return dateString;
 };
 
-export {getCurrentDateValue, getSimpleDate, createElement, groupTripItemsByKey, capitalize, getRandomId, getDateTime, createOffersMap, createDestinationsMap, getEventDuration, getCurrentDateFromValue};
+export {getCurrentDateValue, getSimpleDate, createElement, groupTripItemsByKey, capitalize, getDateTime, createOffersMap, createDestinationsMap, getEventDuration, getCurrentDateFromValue};

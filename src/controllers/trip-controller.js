@@ -6,7 +6,7 @@ import TripDaysComponent from "../components/trip-days-list.js";
 import TripNoItemComponent from "../components/no-item.js";
 import TripItemsListTemplate from "../components/trip-items-list.js";
 import SortingComponent from "../components/sorting.js";
-import {SORT_FILTERS, FormState, KeyMap, ItemRenderModeMap} from "../const.js";
+import {SORT_FILTERS, MAIN_FILTERS, FormState, KeyMap, ItemRenderModeMap} from "../const.js";
 
 
 const SortTypeMap = {
@@ -57,11 +57,12 @@ const gerSortedItems = (items, sortType) => {
 
 
 export default class TripController {
-  constructor(container, itemsModel, api, newItemButton) {
+  constructor(container, itemsModel, api, newItemButton, filterController) {
     this._container = container.getElement();
     this._itemsModel = itemsModel;
     this._api = api;
     this._newItemButton = newItemButton;
+    this._filterController = filterController;
 
     this.offerMap = {};
     this.destinationMap = {};
@@ -83,7 +84,7 @@ export default class TripController {
     this.onDeleteItem = this._onDeleteItem.bind(this);
     this.onNewItem = this._onNewItem.bind(this);
 
-    this._itemsModel.setFilterChangeHandler(this._onFilterChange);
+    this._itemsModel.onFilterChange(this._onFilterChange);
   }
 
   render() {
@@ -102,8 +103,12 @@ export default class TripController {
     this.destinationMap = this._itemsModel.getDestinationMap();
 
     if (items.length === 0) {
-      this._tripNoItemComponent = new TripNoItemComponent();
-      render(this._container, this._tripNoItemComponent, RenderPosition.BEFOREEND);
+      if (this._itemsModel.getItemsAll().length === 0) {
+        this._tripNoItemComponent = new TripNoItemComponent();
+        render(this._container, this._tripNoItemComponent, RenderPosition.BEFOREEND);
+        return;
+      }
+      this._filterController.onFilterChange(MAIN_FILTERS.ALL);
       return;
     }
 
@@ -160,7 +165,7 @@ export default class TripController {
   }
 
   _renderItems(items) {
-    const groupedItems = groupTripItemsByKey(items, KeyMap.START);
+    const groupedItems = Object.entries(groupTripItemsByKey(items, KeyMap.START)).sort();
 
     groupedItems.forEach((item, i) => renderDayItemsList(
         Object.assign({
@@ -276,9 +281,12 @@ export default class TripController {
       this._setButtonAbleStat(this._newItemButton);
     }
 
-    if (!this.checkIsListItemsFull()) {
-      this._tripNoItemComponent = new TripNoItemComponent();
-      render(this._container, this._tripNoItemComponent, RenderPosition.BEFOREEND);
+    if (!this.checkIsListItemsFull) {
+      if (this._itemsModel.getItemsAll.length === 0) {
+        this._tripNoItemComponent = new TripNoItemComponent();
+        render(this._container, this._tripNoItemComponent, RenderPosition.BEFOREEND);
+      }
+      this._filterController.onFilterChange(MAIN_FILTERS.ALL);
     }
 
     this._showedItemControllers.forEach((it) => it.setDefaultView());

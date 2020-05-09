@@ -3,11 +3,11 @@ export default class Item {
     this.id = item.id;
     this.eventType = item.type;
     this.destination = item.destination;
-    this.price = item[`base_price`];
-    this.startEventTime = new Date(item[`date_from`]);
-    this.endEventTime = new Date(item[`date_to`]);
-    this.offers = item[`offers`];
-    this.isFavorite = Boolean(item[`is_favorite`]);
+    this.price = item.base_price;
+    this.startEventTime = new Date(item.date_from);
+    this.endEventTime = new Date(item.date_to);
+    this.offers = item.offers;
+    this.isFavorite = Boolean(item.is_favorite);
   }
 
   toRAW() {

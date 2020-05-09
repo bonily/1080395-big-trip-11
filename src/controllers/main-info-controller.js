@@ -12,10 +12,10 @@ export default class MainInfoController {
 
   render() {
     const container = this._container;
-    const allItems = this._itemsModel.getItems();
 
-    this._mainInfoComponent = new TripMainInfoComponent(allItems);
-    this._itemsModel.setDataChangeHandler(this.rerender);
+
+    this._mainInfoComponent = new TripMainInfoComponent(this._itemsModel.getItemsAll());
+    this._itemsModel.onDataChange(this.rerender);
 
     render(container, this._mainInfoComponent, RenderPosition.AFTERBEGIN);
 

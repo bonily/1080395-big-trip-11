@@ -196,7 +196,7 @@ export default class TripEditComponent extends AbstractSmartComponent {
     this._externalButton = DefaultButtonMap;
 
     this._flatpickr = null;
-    this._applyFlatpickr();
+    this._applyFlatpicker();
     this._selectedStartTime = this._item.startEventTime;
     this._selectedEndTime = this._item.endEventTime;
   }
@@ -219,7 +219,7 @@ export default class TripEditComponent extends AbstractSmartComponent {
   rerender() {
     super.rerender();
 
-    this._applyFlatpickr();
+    this._applyFlatpicker();
   }
 
   resetChanges() {
@@ -250,7 +250,7 @@ export default class TripEditComponent extends AbstractSmartComponent {
     }
   }
 
-  _applyFlatpickr() {
+  _applyFlatpicker() {
     if (this._flatpickr) {
       this._flatpickr.destroy();
       this._flatpickr = null;
@@ -351,5 +351,20 @@ export default class TripEditComponent extends AbstractSmartComponent {
         cb();
       });
     }
+  }
+
+  shake(timeout) {
+    this.getElement().style.animation = `shake ${timeout / 1000}s`;
+
+
+    setTimeout(() => {
+      this.getElement().style.animation = ``;
+
+      this.setNewButtonData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`,
+        isButtonAble: true,
+      });
+    }, timeout);
   }
 }

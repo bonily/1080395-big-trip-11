@@ -7,7 +7,7 @@ const craeteMainFilterMarkup = ({name, count}, activeFilter) => {
   return (
     `<div class="trip-filters__filter">
       <input id="filter-${name}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${name}" ${isFilterAktive()} ${isFilterAble ? `` : `disabled`}>
-      <label class="trip-filters__filter-label" for="filter-${name}">${capitalize(name)}</label>
+      <label class="trip-filters__filter-label ${isFilterAble ? `` : `trip-filters__filter-label--disabled`}" for="filter-${name}">${capitalize(name)}</label>
    </div>`
   );
 };

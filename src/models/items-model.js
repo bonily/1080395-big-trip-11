@@ -55,17 +55,11 @@ export default class ItemsModel {
     return true;
   }
 
-  removeItem(id) {
-    const index = this._items.findIndex((it) => it.id === id);
-
-    if (index === -1) {
-      return false;
+  removeItem(itemId) {
+    if (this._items.some(({id}) => id === itemId)) {
+      this._items = this._items.filter(({id}) => itemId !== id);
+      this._callHandlers(this._onDataChangeHandlers);
     }
-
-    this._items = [].concat(this._items.slice(0, index), this._items.slice(index + 1));
-    this._callHandlers(this._onDataChangeHandlers);
-
-    return true;
   }
 
   addItem(item) {
@@ -78,12 +72,19 @@ export default class ItemsModel {
     this._callHandlers(this._filterChangeHandlers);
   }
 
-  setDataChangeHandler(cb) {
-    this._onDataChangeHandlers.push(cb);
+  onDataChange(cb) {
+    if (this._onDataChangeHandlers.indexOf(cb) === -1) {
+      this._onDataChangeHandlers.push(cb);
+    }
   }
 
-  setFilterChangeHandler(cb) {
+  onFilterChange(cb) {
     this._filterChangeHandlers.push(cb);
+  }
+
+  removeDataChangeHandler(cb) {
+    const index = this._onDataChangeHandlers.indexOf(cb);
+    this._onDataChangeHandlers.splice(index, 1);
   }
 
   _callHandlers(callbacks) {
