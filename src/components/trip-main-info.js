@@ -14,7 +14,7 @@ const createTripDurationMarkup = (dates) => {
 };
 
 const createTripDestinationMarkup = (items) => {
-  return items.length < 3 ? items.map((item) => item.destination.name).join(` - `) : [].concat(items.slice(0, 1), items.slice(items.length - 1)).map((item) => item.destination.name).join(` — … — `);
+  return items.length <= 3 ? items.map((item) => item.destination.name).join(` - `) : [].concat(items.slice(0, 1), items.slice(items.length - 1)).map((item) => item.destination.name).join(` — … — `);
 };
 
 const createTripMainInfoTemplate = (items) => {

@@ -29,8 +29,6 @@ const getCurrentDateValue = (value) => {
 };
 
 const getSimpleDate = (date) => {
-  // const resultDate = `${date.getFullYear()}-${getCurrentDateValue(date.getMonth() + 1)}-${getCurrentDateValue(date.getDate())}`;
-  // console.log(resultDate)
   return moment(date).format(`YYYY-MM-DD`);
 };
 
@@ -46,27 +44,17 @@ const createElement = (template) => {
  * @param {string} key - ключ, по которому будет происходить группировка
  * @return {array} - возвращает массив объектов (ключ: значения (массив точек маршрута), отсортированный по датам)
  */
-const groupTripItemsByKey = (items, key) => {
+const groupTripItemsByKey = (items, key) =>
+  items.reduce((acc, item) => {
+    const resultKey = key === KeyMap.START ? getSimpleDate(item[key]) : item[key];
 
-  if (key === KeyMap.START) {
-    return items.reduce((acc, item) => {
-      if (acc[getSimpleDate(item[key])] === undefined) {
-        acc[getSimpleDate(item[key])] = [];
-      }
-      acc[getSimpleDate(item[key])].push(item);
-      return acc;
-    }, {});
-  }
-
-  return items.reduce((acc, item) => {
-    if (acc[item[key]] === undefined) {
-      acc[item[key]] = [];
+    if (acc[resultKey] === undefined) {
+      acc[resultKey] = [];
     }
-    acc[item[key]].push(item);
+    acc[resultKey].push(item);
+
     return acc;
   }, {});
-
-};
 
 const capitalize = (type) => {
   return type.charAt(0).toUpperCase() + type.slice(1);
@@ -87,7 +75,7 @@ const createDestinationsMap = (items) => {
 };
 
 /**
- * @param {string} value  - дата из flatpicr, которая не парсится без доп функций
+ * @param {string} value  - дата из flatpickr, которая не парсится без доп функций
  * @return {string}  - возвращает дату в формате yyyy-mm-ddTHH:MM
  */
 

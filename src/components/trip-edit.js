@@ -18,17 +18,32 @@ const FormChangeMap = {
   FAVORITE: `event-favorite`,
 };
 
+
+const createOffersMarkup = (avaiblableOffers, offers) => {
+  const offersMarkup = avaiblableOffers.map((offer) => createOfferMarkup(offer, offers)).join(`\n`);
+  return (
+    `<section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+      ${offersMarkup}
+      </div>
+    </section>`
+  );
+};
+
 const createOfferMarkup = (offer, currentOffers) => {
   const isOfferChecked = () => currentOffers.some((currentOffer) => currentOffer.title === offer.title) ? `checked` : ``;
   return (
-    `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}" type="checkbox" name="event-offer" value="${offer.title}" ${isOfferChecked()}>
-      <label class="event__offer-label" for="event-offer-${offer.title}">
-      <span class="event__offer-title">${offer.title}</span>
-      &plus;
-     &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
-      </label>
-     </div>`
+    `
+        <div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}" type="checkbox" name="event-offer" value="${offer.title}" ${isOfferChecked()}>
+          <label class="event__offer-label" for="event-offer-${offer.title}">
+          <span class="event__offer-title">${offer.title}</span>
+          &plus;
+        &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+        </label>
+        </div>
+ `
   );
 };
 
@@ -89,7 +104,7 @@ const createEventTypesMatkup = (type, eventType) => {
 const createTripEditTemplate = ({id, eventType, destination, price, startEventTime, endEventTime, offers, isFavorite}, OffersMap, DestinationMap, _eexternalButtonData) => {
   const notNewItemElementMarkup = (id) ? createNotNewItemElementMarkup(isFavorite) : ` `;
   const avaiblableOffers = OffersMap[eventType];
-  const offersMarkup = avaiblableOffers.map((offer) => createOfferMarkup(offer, offers)).join(`\n`);
+  const offersMarkup = avaiblableOffers.length > 0 ? createOffersMarkup(avaiblableOffers, offers) : ``;
   const descriptionMarup = destination === `` ? ` ` : createDestinationMarkup(destination);
   const dataListMarkup = Object.keys(DestinationMap).map((destinationForData) => createDataListMarkup(destinationForData)).join(`\n`);
   const eventTransferTypesMarkup = EVENT_TYPES_TRANSPORT.map((type) => createEventTypesMatkup(type, eventType)).join(`\n`);
@@ -150,12 +165,7 @@ const createTripEditTemplate = ({id, eventType, destination, price, startEventTi
             ${notNewItemElementMarkup}
           </header>
           <section class="event__details">
-            <section class="event__section  event__section--offers">
-              <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-              <div class="event__available-offers">
-              ${offersMarkup}
-              </div>
-            </section>
+            ${offersMarkup}
             ${descriptionMarup}
           </section>
         </form>
@@ -196,9 +206,11 @@ export default class TripEditComponent extends AbstractSmartComponent {
     this._externalButton = DefaultButtonMap;
 
     this._flatpickr = null;
-    this._applyFlatpicker();
+    this._applyflatpickr();
     this._selectedStartTime = this._item.startEventTime;
     this._selectedEndTime = this._item.endEventTime;
+
+    this.rerender = this.rerender.bind(this);
   }
 
   getTemplate() {
@@ -219,7 +231,7 @@ export default class TripEditComponent extends AbstractSmartComponent {
   rerender() {
     super.rerender();
 
-    this._applyFlatpicker();
+    this._applyflatpickr();
   }
 
   resetChanges() {
@@ -250,7 +262,7 @@ export default class TripEditComponent extends AbstractSmartComponent {
     }
   }
 
-  _applyFlatpicker() {
+  _applyflatpickr() {
     if (this._flatpickr) {
       this._flatpickr.destroy();
       this._flatpickr = null;
@@ -270,6 +282,12 @@ export default class TripEditComponent extends AbstractSmartComponent {
     });
   }
 
+  _checkDestinationValue() {
+    const destinationComponent = this.getElement().querySelector(`#event-destination-1`);
+    const result = checkDestinationValue(destinationComponent.value, destinationComponent, this.destinationMap);
+    return result;
+  }
+
   setFavoriteButtonClickHandler(cb) {
     const setFavoriteButton = this.getElement().querySelector(`.event__favorite-checkbox`);
     if (setFavoriteButton) {
@@ -281,16 +299,14 @@ export default class TripEditComponent extends AbstractSmartComponent {
   }
 
   setCheckValueHandler() {
+    const endTime = this.getElement().querySelector(`#event-end-time-1`);
 
-    const component = this.getElement();
-    const endTime = component.querySelector(`#event-end-time-1`);
-    const destinationComponent = component.querySelector(`#event-destination-1`);
-
-    component.addEventListener(`click`, () => {
-      checkDestinationValue(destinationComponent.value, destinationComponent, this.destinationMap);
+    this.getElement().addEventListener(`click`, () => {
+      this._checkDestinationValue();
       checkDateValue(this._selectedStartTime, this._selectedEndTime, endTime);
     });
   }
+
 
   setFormSubmitHandler(cb) {
     this.getElement().addEventListener(`submit`, cb);
@@ -325,12 +341,16 @@ export default class TripEditComponent extends AbstractSmartComponent {
           break;
 
         case FormChangeMap.START:
-          this._selectedStartTime = new Date(getCurrentDateFromValue(evt.target.value));
+          if (this._checkDestinationValue()) {
+            this._selectedStartTime = new Date(getCurrentDateFromValue(evt.target.value));
+          }
           break;
 
         case FormChangeMap.END:
-          this._selectedEndTime = new Date(getCurrentDateFromValue(evt.target.value));
-          evt.target.setCustomValidity(``);
+          if (this._checkDestinationValue()) {
+            this._selectedEndTime = new Date(getCurrentDateFromValue(evt.target.value));
+            evt.target.setCustomValidity(``);
+          }
           break;
 
         case FormChangeMap.FAVORITE:

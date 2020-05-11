@@ -257,7 +257,7 @@ export default class TripController {
       })
       .catch(() => {
         itemController.shake();
-        itemController.changeFormState(FormState.abled);
+        itemController.changeFormState(FormState.ENABLED);
       });
   }
 
@@ -270,7 +270,7 @@ export default class TripController {
       })
       .catch(() => {
         itemController.shake();
-        itemController.changeFormState(FormState.abled);
+        itemController.changeFormState(FormState.ENABLED);
       });
 
   }

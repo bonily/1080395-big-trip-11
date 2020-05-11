@@ -22,6 +22,7 @@ const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v1`;
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
+const STATUS_TEXT = `offline`;
 
 const siteHeaderTripElement = document.querySelector(`.trip-main`);
 const siteHeaderMenuElement = siteHeaderTripElement.querySelector(`.trip-controls`);
@@ -101,16 +102,16 @@ window.addEventListener(`online`, () => {
   apiWithProvider.sync();
 });
 
-window.addEventListener(`offline`, () => {
+window.addEventListener(STATUS_TEXT, () => {
   document.title += ` [offline]`;
 });
 
 
-// window.addEventListener(`load`, () => {
-//   navigator.serviceWorker.register(`./sw.js`)
-//     .then(() => {
-//       // Действие, в случае успешной регистрации ServiceWorker
-//     }).catch(() => {
-//       // Действие, в случае ошибки при регистрации ServiceWorker
-//     });
-// });
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`./sw.js`)
+    .then(() => {
+      // Действие, в случае успешной регистрации ServiceWorker
+    }).catch(() => {
+      // Действие, в случае ошибки при регистрации ServiceWorker
+    });
+});
