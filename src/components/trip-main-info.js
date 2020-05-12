@@ -57,7 +57,7 @@ const createTripMainInfoTemplate = (items) => {
 };
 
 
-export default class TripMainInfoComponent extends AbstractComponent {
+export default class TripMainInfo extends AbstractComponent {
   constructor(items) {
     super();
     this._items = items;

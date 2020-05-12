@@ -1,7 +1,7 @@
 import {getItemsByFilter} from "../utils/filter.js";
-import {MAIN_FILTERS} from "../const.js";
+import {MAIN_FILTER} from "../const.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
-import TripFilterComponent from "../components/trip-filter.js";
+import TripFilter from "../components/trip-filter.js";
 
 
 export default class FilterController {
@@ -11,7 +11,7 @@ export default class FilterController {
     this._tripMainControlComponent = tripMainControlComponent;
 
     this._filterComponent = null;
-    this.activeFilter = MAIN_FILTERS.ALL;
+    this.activeFilter = MAIN_FILTER.ALL;
 
     this._onFilterChange = this._onFilterChange.bind(this);
     this.onFilterChange = this._onFilterChange.bind(this);
@@ -21,14 +21,14 @@ export default class FilterController {
   render() {
     const container = this._container;
     const allItems = this._itemsModel.getItemsAll();
-    const filters = Object.values(MAIN_FILTERS).map((filter) => {
+    const filters = Object.values(MAIN_FILTER).map((filter) => {
       return {
         name: filter,
         count: getItemsByFilter(allItems, filter).length,
       };
     });
 
-    this._filterComponent = new TripFilterComponent(filters, this.activeFilter);
+    this._filterComponent = new TripFilter(filters, this.activeFilter);
 
     render(container, this._filterComponent, RenderPosition.BEFOREEND);
 

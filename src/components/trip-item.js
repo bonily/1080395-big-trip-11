@@ -80,7 +80,7 @@ const createTripItemTemplate = ({eventType, destination, price, startEventTime, 
 };
 
 
-export default class TripItemComponent extends AbstractComponent {
+export default class TripItem extends AbstractComponent {
   constructor(item) {
     super();
 

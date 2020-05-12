@@ -8,7 +8,7 @@ const createItemsTemplate = () => {
   );
 };
 
-export default class TripItemsListTemplate extends AbstractComponent {
+export default class TripItemsList extends AbstractComponent {
   getTemplate() {
     return createItemsTemplate();
   }

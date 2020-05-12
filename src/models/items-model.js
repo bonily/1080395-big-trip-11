@@ -1,6 +1,6 @@
 import {createOffersMap, createDestinationsMap} from "../utils/common.js";
 import {getItemsByFilter} from "../utils/filter.js";
-import {MAIN_FILTERS} from "../const.js";
+import {MAIN_FILTER} from "../const.js";
 
 
 export default class ItemsModel {
@@ -10,7 +10,7 @@ export default class ItemsModel {
     this._destinationsMap = {};
     this._onDataChangeHandlers = [];
     this._filterChangeHandlers = [];
-    this._activeFilter = MAIN_FILTERS.ALL;
+    this._activeFilter = MAIN_FILTER.ALL;
   }
 
   getItems() {

@@ -1,5 +1,5 @@
 import {render, RenderPosition, remove} from "../utils/render.js";
-import TripMainInfoComponent from "../components/trip-main-info.js";
+import TripMainInfo from "../components/trip-main-info.js";
 
 export default class MainInfoController {
   constructor(container, itemsModel) {
@@ -14,7 +14,7 @@ export default class MainInfoController {
     const container = this._container;
 
 
-    this._mainInfoComponent = new TripMainInfoComponent(this._itemsModel.getItemsAll());
+    this._mainInfoComponent = new TripMainInfo(this._itemsModel.getItemsAll());
     this._itemsModel.onDataChange(this.rerender);
 
     render(container, this._mainInfoComponent, RenderPosition.AFTERBEGIN);

@@ -23,7 +23,7 @@ const createTripMainFilterTemlate = (filters, activeFilter) => {
 };
 
 
-export default class TripFilterComponent {
+export default class TripFilter {
   constructor(filters, activeFilter) {
     this._filters = filters;
     this._element = null;

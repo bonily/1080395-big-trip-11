@@ -1,5 +1,8 @@
 import Item from "../models/item.js";
 
+const INFORMATIONAL_STATUS = 200;
+const REDIRECTION_STATUS = 300;
+
 
 const Method = {
   GET: `GET`,
@@ -10,7 +13,7 @@ const Method = {
 
 
 const checkStatus = (response) => {
-  if (response.status >= 200 && response.status < 300) {
+  if (response.status >= INFORMATIONAL_STATUS && response.status < REDIRECTION_STATUS) {
     return response;
   } else {
     throw new Error(`${response.status}: ${response.statusText}`);

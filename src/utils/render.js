@@ -24,7 +24,7 @@ const render = (container, component, place, specialPlace) => {
  * @param {Object} oldComponent
  */
 const replace = (newComponent, oldComponent) => {
-  let parentElement = oldComponent.getElement().parentElement;
+  const parentElement = oldComponent.getElement().parentElement;
   const newElement = newComponent.getElement();
   const oldElement = oldComponent.getElement();
 

@@ -1,4 +1,4 @@
-import {MAIN_FILTERS} from "../const.js";
+import {MAIN_FILTER} from "../const.js";
 
 const getNotCurrentItems = (items, date, type) => {
 // type - ключ сортировки, past  - для поездок которые уже прошли
@@ -11,9 +11,9 @@ const getNotCurrentItems = (items, date, type) => {
 export const getItemsByFilter = (items, filter) => {
   const nowDate = new Date();
   switch (filter) {
-    case MAIN_FILTERS.PAST:
+    case MAIN_FILTER.PAST:
       return getNotCurrentItems(items, nowDate, `past`);
-    case MAIN_FILTERS.FUTURE:
+    case MAIN_FILTER.FUTURE:
       return getNotCurrentItems(items, nowDate);
     default: return items;
   }

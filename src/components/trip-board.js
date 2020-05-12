@@ -10,7 +10,7 @@ const createTripBoardTemplate = () => {
 };
 
 
-export default class TripBoardComponent extends AbstractComponent {
+export default class TripBoard extends AbstractComponent {
   getTemplate() {
     return createTripBoardTemplate();
   }

@@ -3,15 +3,15 @@ import FilterController from "./controllers/filter-controller.js";
 import ItemsModel from "./models/items-model.js";
 import ListLoading from "./components/list-loading.js";
 import MainInfoController from "./controllers/main-info-controller.js";
-import {MAIN_FILTERS} from "./const.js";
+import {MAIN_FILTER} from "./const.js";
 import {nanoid} from "nanoid";
 import Provider from "./api/provider.js";
 import {render, RenderPosition, remove} from "./utils/render.js";
-import StatisticsComponent from "./components/statistics.js";
+import Statistics from "./components/statistics.js";
 import Store from "./api/store.js";
-import TripBoardComponent from "./components/trip-board.js";
+import TripBoard from "./components/trip-board.js";
 import TripController from "./controllers/trip-controller.js";
-import TripMainControlComponent from "./components/trip-main-control.js";
+import TripMainControl from "./components/trip-main-control.js";
 
 
 const AUTHORIZATION = window.localStorage.getItem(`authToken`) || `Basic ${nanoid()}`;
@@ -37,9 +37,9 @@ const apiWithProvider = new Provider(api, store);
 const itemsModel = new ItemsModel();
 
 const listLoadingComponent = new ListLoading();
-const statisticsComponent = new StatisticsComponent(itemsModel);
-const tripBoardComponent = new TripBoardComponent();
-const tripMainControlComponent = new TripMainControlComponent();
+const statisticsComponent = new Statistics(itemsModel);
+const tripBoardComponent = new TripBoard();
+const tripMainControlComponent = new TripMainControl();
 
 
 const filterController = new FilterController(siteHeaderMenuElement, itemsModel, tripMainControlComponent);
@@ -61,7 +61,7 @@ tripMainControlComponent.setOnControlClickHandler((MenuItem) => {
     case `Stats`:
       tripBoardComponent.hide();
       statisticsComponent.show();
-      filterController.activeFilter = MAIN_FILTERS.ALL;
+      filterController.activeFilter = MAIN_FILTER.ALL;
       filterController.rerender();
       break;
     case `Table`:
@@ -73,7 +73,7 @@ tripMainControlComponent.setOnControlClickHandler((MenuItem) => {
 
 newItemButton.addEventListener(`click`, () => {
   if (tripController.checkIsListItemsFull()) {
-    filterController.onFilterChange(MAIN_FILTERS.ALL);
+    filterController.onFilterChange(MAIN_FILTER.ALL);
     filterController.rerender();
   }
   statisticsComponent.hide();

@@ -18,7 +18,7 @@ const createTripMainControlTemplate = () => {
 };
 
 
-export default class TripMainControlComponent {
+export default class TripMainControl {
   constructor() {
     this._element = null;
     this._currentActiveControl = null;

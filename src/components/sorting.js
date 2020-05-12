@@ -24,7 +24,7 @@ const createListSortTemplate = (filters) => {
 };
 
 
-export default class SortingComponent extends AbstractSmartComponent {
+export default class Sorting extends AbstractSmartComponent {
   constructor(filters) {
     super();
 

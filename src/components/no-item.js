@@ -7,7 +7,7 @@ const createNoItemTeplate = () => {
   );
 };
 
-export default class TripNoItemComponent extends AbstractComponent {
+export default class NoItem extends AbstractComponent {
 
   getTemplate() {
     return createNoItemTeplate();

@@ -191,7 +191,7 @@ const checkDateValue = (start, end, component) => {
 };
 
 
-export default class TripEditComponent extends AbstractSmartComponent {
+export default class TripEdit extends AbstractSmartComponent {
   constructor(item, OfferMap, DestinationMap) {
     super();
 
@@ -272,7 +272,7 @@ export default class TripEditComponent extends AbstractSmartComponent {
 
     dateElements.forEach((dateElement) => {
       const typeDate = dateElement.name.split(`-`)[1];
-      const typeEventDate = typeDate + `EventTime`;
+      const typeEventDate = `${typeDate}EventTime`;
       this._flatpickr = flatpickr(dateElement, {
         allowInput: true,
         defaultDate: this._item[typeEventDate],

@@ -13,7 +13,7 @@ const createTripDaysTemplate = () => {
 };
 
 
-export default class TripDaysComponent extends AbstractCompinent {
+export default class TripDays extends AbstractCompinent {
   getTemplate() {
     return createTripDaysTemplate();
   }

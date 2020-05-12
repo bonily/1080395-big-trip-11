@@ -9,7 +9,7 @@ const createDayItemsTemplate = () => {
 };
 
 
-export default class TripDayItemsTemplate extends AbstractComponent {
+export default class TripDayItems extends AbstractComponent {
   getTemplate() {
     return createDayItemsTemplate();
   }

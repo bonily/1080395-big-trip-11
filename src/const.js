@@ -23,7 +23,7 @@ export const SORT_FILTERS = [
   {name: `price`, isActive: false},
 ];
 
-export const MAIN_FILTERS = {
+export const MAIN_FILTER = {
   ALL: `everything`,
   FUTURE: `future`,
   PAST: `past`,

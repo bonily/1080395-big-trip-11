@@ -3,9 +3,9 @@ import Item from "../models/item.js";
 import {FormState, ItemRenderModeMap} from "../const.js";
 import {getCurrentDateFromValue} from "../utils/common.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
-import TripDayItemsTemplate from "../components/trip-day-items.js";
-import TripEditComponent from "../components/trip-edit.js";
-import TripItemComponent from "../components/trip-item.js";
+import TripDayItems from "../components/trip-day-items.js";
+import TripEdit from "../components/trip-edit.js";
+import TripItem from "../components/trip-item.js";
 
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
@@ -63,13 +63,13 @@ export default class ItemController {
     this._item = item;
     this._mode = mode;
 
-    const itemContainer = new TripDayItemsTemplate();
+    const itemContainer = new TripDayItems();
 
     const oldItemComponent = this._itemComponent;
     const oldItemEditComponent = this._itemEditComponent;
 
-    this._itemComponent = new TripItemComponent(item);
-    this._itemEditComponent = new TripEditComponent(item, this.offerMap, this.destinationMap);
+    this._itemComponent = new TripItem(item);
+    this._itemEditComponent = new TripEdit(item, this.offerMap, this.destinationMap);
 
     this._setItemHandlers();
 

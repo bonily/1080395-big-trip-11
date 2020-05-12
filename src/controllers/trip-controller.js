@@ -1,12 +1,12 @@
 import ItemController, {EmptyTask} from "./item-сontroller.js";
 import {groupTripItemsByKey} from "../utils/common.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
-import TripDayComponent from "../components/trip-day";
-import TripDaysComponent from "../components/trip-days-list.js";
-import TripNoItemComponent from "../components/no-item.js";
-import TripItemsListTemplate from "../components/trip-items-list.js";
-import SortingComponent from "../components/sorting.js";
-import {SORT_FILTERS, MAIN_FILTERS, FormState, KeyMap, ItemRenderModeMap} from "../const.js";
+import TripDay from "../components/trip-day";
+import TripDaysList from "../components/trip-days-list.js";
+import NoItem from "../components/no-item.js";
+import TripItemsList from "../components/trip-items-list.js";
+import Sorting from "../components/sorting.js";
+import {SORT_FILTERS, MAIN_FILTER, FormState, KeyMap, ItemRenderModeMap} from "../const.js";
 
 
 const SortTypeMap = {
@@ -18,8 +18,8 @@ const SortTypeMap = {
 
 const renderDayItemsList = ({tripComponent, day, index, items, onItemChange, instans, onViewChange, onDeleteItem, onNewItem, OfferMap, DestinationMap}) => {
 
-  const tripDayComponent = new TripDayComponent(day, index);
-  const itemListElement = new TripItemsListTemplate();
+  const tripDayComponent = new TripDay(day, index);
+  const itemListElement = new TripItemsList();
 
   const dayItems = (day) ? day[1] : items;
 
@@ -41,16 +41,14 @@ const renderDayItemsList = ({tripComponent, day, index, items, onItemChange, ins
 
 const gerSortedItems = (items, sortType) => {
   const durationMs = (item) => item.endEventTime.getTime() - item.startEventTime.getTime();
-  let sortedItems = [];
+  const sortedItems = [];
   const showingItems = items.slice();
 
   switch (sortType) {
     case SortTypeMap.PRICE:
-      sortedItems = showingItems.sort((a, b) => b.price - a.price);
-      break;
+      return showingItems.sort((a, b) => b.price - a.price);
     case SortTypeMap.TIME:
-      sortedItems = showingItems.sort((a, b) => durationMs(b) - durationMs(a));
-      break;
+      return showingItems.sort((a, b) => durationMs(b) - durationMs(a));
   }
   return sortedItems;
 };
@@ -104,11 +102,11 @@ export default class TripController {
 
     if (items.length === 0) {
       if (this._itemsModel.getItemsAll().length === 0) {
-        this._tripNoItemComponent = new TripNoItemComponent();
+        this._tripNoItemComponent = new NoItem();
         render(this._container, this._tripNoItemComponent, RenderPosition.BEFOREEND);
         return;
       }
-      this._filterController.onFilterChange(MAIN_FILTERS.ALL);
+      this._filterController.onFilterChange(MAIN_FILTER.ALL);
       return;
     }
 
@@ -153,13 +151,13 @@ export default class TripController {
   }
 
   _renderDayListComponent() {
-    this._daysComponent = new TripDaysComponent();
+    this._daysComponent = new TripDaysList();
     this._tripDaysListComponent = this._daysComponent.getElement();
     render(this._container, this._daysComponent, RenderPosition.BEFOREEND);
   }
 
   _renderSortFltersComponent() {
-    this._sortListComponent = new SortingComponent(SORT_FILTERS);
+    this._sortListComponent = new Sorting(SORT_FILTERS);
     this._sortListComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     render(this._container, this._sortListComponent, RenderPosition.BEFOREEND);
   }
@@ -283,10 +281,10 @@ export default class TripController {
 
     if (!this.checkIsListItemsFull) {
       if (this._itemsModel.getItemsAll.length === 0) {
-        this._tripNoItemComponent = new TripNoItemComponent();
+        this._tripNoItemComponent = new NoItem();
         render(this._container, this._tripNoItemComponent, RenderPosition.BEFOREEND);
       }
-      this._filterController.onFilterChange(MAIN_FILTERS.ALL);
+      this._filterController.onFilterChange(MAIN_FILTER.ALL);
     }
 
     this._showedItemControllers.forEach((it) => it.setDefaultView());

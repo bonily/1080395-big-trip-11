@@ -37,7 +37,7 @@ const createTripDayTemplate = (day, dayIndex) => {
 };
 
 
-export default class TripDayComponent extends AbstractComponent {
+export default class TripDay extends AbstractComponent {
   constructor(day, dayIndex) {
     super();
 

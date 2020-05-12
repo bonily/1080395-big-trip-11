@@ -36,12 +36,12 @@ const convertDurationFormat = (ms) => {
 
 
 const formatDataForChart = (itemsGroup, chartType) => {
-  let copyItemsGroup = Object.assign({}, itemsGroup);
-  let itemsForChart = [];
+  const copyItemsGroup = Object.assign({}, itemsGroup);
+  const itemsForChart = [];
   switch (chartType) {
     case ChartType.TRANSPORT:
       EVENT_TYPES_ACTIVITY.forEach((type) => delete copyItemsGroup[type]);
-      for (let key in copyItemsGroup) {
+      for (const key in copyItemsGroup) {
         if (copyItemsGroup[key] !== undefined) {
           itemsForChart.push([key, copyItemsGroup[key].length]);
         }
@@ -49,7 +49,7 @@ const formatDataForChart = (itemsGroup, chartType) => {
       break;
 
     case ChartType.MONEY:
-      for (let key in copyItemsGroup) {
+      for (const key in copyItemsGroup) {
         if (copyItemsGroup[key] !== undefined) {
           itemsForChart.push([key, copyItemsGroup[key].reduce((acc, item) => {
             return acc + item.price;
@@ -59,7 +59,7 @@ const formatDataForChart = (itemsGroup, chartType) => {
       break;
 
     case ChartType.TIME:
-      for (let key in copyItemsGroup) {
+      for (const key in copyItemsGroup) {
 
         if (copyItemsGroup[key] !== undefined) {
           itemsForChart.push([key, copyItemsGroup[key].reduce((acc, item) => {
@@ -334,7 +334,7 @@ const createStatTemplate = () => {
 };
 
 
-export default class StatisticsComponent extends AbstractComponent {
+export default class Statistics extends AbstractComponent {
   constructor(itemsModel) {
     super();
 
