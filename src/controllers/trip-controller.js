@@ -1,4 +1,4 @@
-import ItemController, {EmptyTask} from "./item-сontroller.js";
+import ItemController, {EmptyTask} from "./item-controller.js";
 import {groupTripItemsByKey} from "../utils/common.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import TripDay from "../components/trip-day";
