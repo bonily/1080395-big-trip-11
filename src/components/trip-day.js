@@ -27,13 +27,12 @@ const createTripDayTemplate = (day, dayIndex) => {
             <time class="day__date" datetime="${currentDate}">${shortDate}</time>
         </div>
       </li>`);
-  } else {
-    return (
-      `<li class="trip-days__item  day">
-        <div class="day__info">
-        </div>
-      </li>`);
   }
+  return (
+    `<li class="trip-days__item  day">
+      <div class="day__info">
+      </div>
+    </li>`);
 };
 
 

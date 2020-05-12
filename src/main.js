@@ -3,7 +3,7 @@ import FilterController from "./controllers/filter-controller.js";
 import ItemsModel from "./models/items-model.js";
 import ListLoading from "./components/list-loading.js";
 import MainInfoController from "./controllers/main-info-controller.js";
-import {MAIN_FILTER} from "./const.js";
+import {MAIN_FILTER, MenuItemMap} from "./const.js";
 import {nanoid} from "nanoid";
 import Provider from "./api/provider.js";
 import {render, RenderPosition, remove} from "./utils/render.js";
@@ -58,13 +58,13 @@ statisticsComponent.hide();
 
 tripMainControlComponent.setOnControlClickHandler((MenuItem) => {
   switch (MenuItem) {
-    case `Stats`:
+    case MenuItemMap.STATS:
       tripBoardComponent.hide();
       statisticsComponent.show();
       filterController.activeFilter = MAIN_FILTER.ALL;
       filterController.rerender();
       break;
-    case `Table`:
+    case MenuItemMap.TABLE:
       statisticsComponent.hide();
       tripBoardComponent.show();
       break;

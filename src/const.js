@@ -46,3 +46,7 @@ export const ItemRenderModeMap = {
   FIRST: `firstNew`,
 };
 
+export const MenuItemMap = {
+  STATS: `Stats`,
+  TABLE: `Table`
+};

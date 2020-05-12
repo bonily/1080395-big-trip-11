@@ -115,6 +115,10 @@ export default class ItemController {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
+  shake() {
+    this._itemEditComponent.shake(SHAKE_ANIMATION_TIMEOUT);
+  }
+
   setDefaultView() {
     if (this._mode === ItemRenderModeMap.NEW) {
       this.destroy();
@@ -212,9 +216,4 @@ export default class ItemController {
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }
-
-  shake() {
-    this._itemEditComponent.shake(SHAKE_ANIMATION_TIMEOUT);
-  }
-
 }

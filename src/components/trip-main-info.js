@@ -25,7 +25,7 @@ const createTripMainInfoTemplate = (items) => {
   if (items.length > 0) {
     const offerCosts = [];
     items.map((item) => item.offers.forEach((offer) => offerCosts.push(offer.price)));
-    tripCost = items.map((item) => item.price).reduce((acc, price) => acc + price, 0) + offerCosts.reduce((acc, offerCost) => acc + offerCost, 0);
+    tripCost = items.map((item) => item.price).reduce((accumulator, price) => accumulator + price, 0) + offerCosts.reduce((accumulator, offerCost) => accumulator + offerCost, 0);
     const sortItems = items.slice().sort((a, b) => a.startEventTime - b.startEventTime);
     tripDestinationInfo = createTripDestinationMarkup(sortItems);
     const tripDates = items

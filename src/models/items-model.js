@@ -42,14 +42,14 @@ export default class ItemsModel {
     this._destinationsMap = createDestinationsMap(destinations);
   }
 
-  updateItem(id, item) {
-    const index = this._items.findIndex((it) => it.id === id);
+  updateItem(id, modifiedItem) {
+    const index = this._items.findIndex((item) => item.id === id);
 
     if (index === -1) {
       return false;
     }
 
-    this._items = [].concat(this._items.slice(0, index), item, this._items.slice(index + 1));
+    this._items = [].concat(this._items.slice(0, index), modifiedItem, this._items.slice(index + 1));
     this._callHandlers(this._onDataChangeHandlers);
 
     return true;

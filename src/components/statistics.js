@@ -51,8 +51,8 @@ const formatDataForChart = (itemsGroup, chartType) => {
     case ChartType.MONEY:
       for (const key in copyItemsGroup) {
         if (copyItemsGroup[key] !== undefined) {
-          itemsForChart.push([key, copyItemsGroup[key].reduce((acc, item) => {
-            return acc + item.price;
+          itemsForChart.push([key, copyItemsGroup[key].reduce((accumulator, item) => {
+            return accumulator + item.price;
           }, 0)]);
         }
       }
@@ -62,10 +62,10 @@ const formatDataForChart = (itemsGroup, chartType) => {
       for (const key in copyItemsGroup) {
 
         if (copyItemsGroup[key] !== undefined) {
-          itemsForChart.push([key, copyItemsGroup[key].reduce((acc, item) => {
+          itemsForChart.push([key, copyItemsGroup[key].reduce((accumulator, item) => {
             const durationItem = item.endEventTime.getTime() - item.startEventTime.getTime();
 
-            return acc + durationItem;
+            return accumulator + durationItem;
 
           }, 0)]);
         }

@@ -45,15 +45,15 @@ const createElement = (template) => {
  * @return {array} - возвращает массив объектов (ключ: значения (массив точек маршрута), отсортированный по датам)
  */
 const groupTripItemsByKey = (items, key) =>
-  items.reduce((acc, item) => {
+  items.reduce((accumulator, item) => {
     const resultKey = key === KeyMap.START ? getSimpleDate(item[key]) : item[key];
 
-    if (acc[resultKey] === undefined) {
-      acc[resultKey] = [];
+    if (accumulator[resultKey] === undefined) {
+      accumulator[resultKey] = [];
     }
-    acc[resultKey].push(item);
+    accumulator[resultKey].push(item);
 
-    return acc;
+    return accumulator;
   }, {});
 
 const capitalize = (type) => {
@@ -61,16 +61,16 @@ const capitalize = (type) => {
 };
 
 const createOffersMap = (items) => {
-  return items.reduce((acc, item) => {
-    acc[item.type] = item.offers;
-    return acc;
+  return items.reduce((accumulator, item) => {
+    accumulator[item.type] = item.offers;
+    return accumulator;
   }, {});
 };
 
 const createDestinationsMap = (items) => {
-  return items.reduce((acc, item) => {
-    acc[item.name] = item;
-    return acc;
+  return items.reduce((accumulator, item) => {
+    accumulator[item.name] = item;
+    return accumulator;
   }, {});
 };
 

@@ -223,6 +223,21 @@ export default class TripEdit extends AbstractSmartComponent {
     return formData;
   }
 
+  shake(timeout) {
+    this.getElement().style.animation = `shake ${timeout / 1000}s`;
+
+
+    setTimeout(() => {
+      this.getElement().style.animation = ``;
+
+      this.setNewButtonData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`,
+        isButtonAble: true,
+      });
+    }, timeout);
+  }
+
   setNewButtonData(newButtonData) {
     this._externalButton = Object.assign({}, DefaultButtonMap, newButtonData);
     this.rerender();
@@ -239,6 +254,7 @@ export default class TripEdit extends AbstractSmartComponent {
     this._item = Object.assign(this._item, this._itemCopy, {
       isFavorite: isItemFavorite,
     });
+    this.reset();
   }
 
   recoveryListeners() {
@@ -354,7 +370,7 @@ export default class TripEdit extends AbstractSmartComponent {
           break;
 
         case FormChangeMap.FAVORITE:
-          this._item.isFavorite = Boolean(evt.target.value);
+          this._item.isFavorite = evt.target.checked;
           break;
       }
     });
@@ -367,24 +383,8 @@ export default class TripEdit extends AbstractSmartComponent {
     if (rollUpButton) {
       rollUpButton.addEventListener(`click`, () => {
         this.resetChanges();
-        this.rerender();
         cb();
       });
     }
-  }
-
-  shake(timeout) {
-    this.getElement().style.animation = `shake ${timeout / 1000}s`;
-
-
-    setTimeout(() => {
-      this.getElement().style.animation = ``;
-
-      this.setNewButtonData({
-        saveButtonText: `Save`,
-        deleteButtonText: `Delete`,
-        isButtonAble: true,
-      });
-    }, timeout);
   }
 }
