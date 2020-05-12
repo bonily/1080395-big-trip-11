@@ -20,7 +20,7 @@ export default class Store {
 
   getOffers() {
     try {
-      return JSON.parse(this._storage.getItem(this._storeOffesKey)) || [];
+      return JSON.parse(this._storage.getItem(this._storeOfferKey)) || [];
     } catch (err) {
       return {};
     }
